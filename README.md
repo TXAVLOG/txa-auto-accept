@@ -1,6 +1,7 @@
 # 🛡️ TXA Auto Accept - Premium Edition
 
 [![Version](https://img.shields.io/badge/version-3.2.3-blue.svg)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept.svg)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **TXA Auto Accept** là một tiện ích mở rộng (extension) cho VS Code được thiết kế với giao diện **Liquid Glass Morphism** siêu đẹp, giúp tự động hóa việc chấp nhận hoặc từ chối các hộp thoại, lệnh trong môi trường lập trình của bạn một cách thông minh và an toàn.
