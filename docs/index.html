@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TXA Auto Accept - Premium Marketplace</title>
+    <title>TXA Store - Premium VS Code Extensions</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
@@ -17,6 +17,7 @@
             --border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -31,173 +32,65 @@
             color: var(--text-main);
             overflow-x: hidden;
             background-image:
-                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.1), transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1), transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.12), transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.12), transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.05), transparent 30%);
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 10%;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
 
-        header {
+        .nav-brand {
             display: flex;
             align-items: center;
-            gap: 2.5rem;
-            margin-bottom: 4rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .logo-box {
-            width: 120px;
-            height: 120px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .logo-box img {
-            width: 80px;
-            height: 80px;
-        }
-
-        .hero-text h1 {
-            font-size: 2.8rem;
+            gap: 12px;
             font-weight: 800;
-            background: linear-gradient(to right, #fff, #94a3b8);
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--primary), #fff);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
         }
 
-        .publisher {
-            font-size: 1.1rem;
-            color: var(--primary);
-            font-weight: 600;
+        .nav-links {
             display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .badge-verified {
-            background: var(--primary);
-            color: var(--bg);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 3rem;
-        }
-
-        .main-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 32px;
-            padding: 3rem;
-            backdrop-filter: blur(20px);
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
-        }
-
-        p {
-            line-height: 1.8;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-install {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #fff;
-            padding: 1rem 2.5rem;
-            border-radius: 16px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
-
-        .btn-install:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.4);
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
             gap: 2rem;
         }
 
-        .info-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 20px;
-        }
-
-        .info-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .info-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .tag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 1rem;
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: var(--text-dark);
-        }
-
-        footer {
-            margin-top: 6rem;
-            text-align: center;
+        .nav-links a {
+            text-decoration: none;
             color: var(--text-muted);
             font-size: 0.9rem;
-            padding-bottom: 4rem;
+            font-weight: 600;
+            transition: color 0.3s;
         }
 
-        @keyframes fadeIn {
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 6rem 10%;
+            animation: heroFadeIn 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes heroFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(40px);
             }
 
             to {
@@ -206,95 +99,307 @@
             }
         }
 
-        @media (max-width: 800px) {
-            .grid {
-                grid-template-columns: 1fr;
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+        }
+
+        .hero span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            line-height: 1.6;
+        }
+
+        .store-grid {
+            padding: 4rem 10%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .product-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: var(--card-shadow);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .card-icon img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .card-title h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: var(--primary);
+            color: var(--bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .btn-buy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            padding: 1rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-buy:hover {
+            background: var(--primary);
+            color: var(--bg);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .how-to {
+            padding: 6rem 10%;
+            background: rgba(255, 255, 255, 0.01);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .how-to h2 {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .step-card {
+            max-width: 250px;
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .step-card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
             }
 
-            header {
-                flex-direction: column;
-                text-align: center;
+            .store-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="logo-box">
-                <img src="https://raw.githubusercontent.com/TXAVLOG/txa-auto-accept/main/icon.png" alt="Logo">
-            </div>
-            <div class="hero-text">
-                <h1>TXA Auto Accept</h1>
-                <div class="publisher">
-                    TXA TEAM <span class="badge-verified">Verified by Antigravity</span>
-                </div>
-            </div>
-        </header>
+    <nav>
+        <div class="nav-brand">TXA TEAM STORE</div>
+        <div class="nav-links">
+            <a href="#products">Cửa hàng</a>
+            <a href="https://github.com/TXAVLOG" target="_blank">GitHub</a>
+            <a href="#how-to">Hỗ trợ</a>
+        </div>
+    </nav>
 
-        <div class="grid">
-            <div class="main-card">
-                <h2>Về Extension này</h2>
-                <p>
-                    TXA Auto Accept là công cụ tối ưu cho lập trình viên muốn tự động hóa các thao tác nhàm chán trong
-                    VS Code. Với giao diện <b>Liquid Glass Morphism</b> hiện đại, bạn có thể giám sát và kiểm soát mọi
-                    hành động tự động một cách an toàn.
-                </p>
-                <p>
-                    Hệ thống <b>Shield</b> tích hợp giúp ngăn chặn các lệnh thực thi nguy hiểm, bảo vệ mã nguồn và hệ
-                    thống của bạn khỏi những sai sót đáng tiếc.
-                </p>
+    <header class="hero">
+        <h1>Premium <span>VS Code</span> Extensions</h1>
+        <p>Bộ sưu tập các công cụ tối ưu hóa trải nghiệm lập trình đỉnh cao, thiết kế với phong cách Liquid Glass
+            Morphism hiện đại.</p>
+        <div class="badge-verified"
+            style="display:inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">Verified by
+            Antigravity Agent</div>
+    </header>
 
-                <a href="javascript:void(0)" class="btn-install" id="btn-download" style="cursor: pointer;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path
-                            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
-                    </svg>
-                    Đang kiểm tra phiên bản...
-                </a>
-
-                <p style="margin-top: 2rem; font-size: 0.9rem;">
-                    * Sau khi tải về, mở VS Code -> Extensions -> Bấm <kbd>...</kbd> -> <b>Install from VSIX...</b>
-                </p>
-            </div>
-
-            <div class="sidebar">
-                <div class="info-item">
-                    <div class="info-label">Phiên bản</div>
-                    <div class="info-value" id="info-version">---</div>
+    <section id="products" class="store-grid">
+        <!-- Flagship Product: Auto Accept -->
+        <div class="product-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <img src="https://raw.githubusercontent.com/TXAVLOG/txa-auto-accept/main/icon.png"
+                        alt="Auto Accept">
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Nhà phát triển</div>
-                    <div class="info-value">TXAVLOG</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Giấy phép</div>
-                    <div class="info-value">MIT License</div>
-                </div>
-                <div class="info-item" style="border-color: var(--primary);">
-                    <div class="info-label">Antigravity Status</div>
-                    <div class="info-value" style="color: var(--primary);">💎 Premium Agent Approved</div>
-                </div>
-                <div class="tag-list">
-                    <span class="tag">Automation</span>
-                    <span class="tag">AI Engine</span>
-                    <span class="tag">Glassmorphism</span>
-                    <span class="tag">Security</span>
+                <div class="card-title">
+                    <h3>TXA Auto Accept</h3>
+                    <span class="card-tag">Premium</span>
                 </div>
             </div>
+            <p class="desc">Tự động bấm nút Accept/Submit thông minh, đi kèm hệ thống Shield chặn lệnh nguy hiểm và
+                Dashboard giám sát cực đẹp.</p>
+            <a href="javascript:void(0)" class="btn-buy" id="btn-auto-accept">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path
+                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
+                </svg>
+                <span id="label-auto-accept">Đang kiểm tra...</span>
+            </a>
         </div>
 
-        <footer>
-            &copy; 2026 TXA TEAM. Built with ❤️ and Antigravity AI.
-        </footer>
-    </div>
+        <!-- Product 2: Status Clock -->
+        <div class="product-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6v6l4 2" />
+                    </svg>
+                </div>
+                <div class="card-title">
+                    <h3>TX Status Clock</h3>
+                    <span class="card-tag" style="background: #10b981;">Utility</span>
+                </div>
+            </div>
+            <p class="desc">Đưa đồng hồ thời gian thực lên thanh Status Bar với khả năng tùy biến format cực mạnh (giờ,
+                phút, giây, thứ, ngày tháng).</p>
+            <a href="https://github.com/TXAVLOG/txa-status-clock/releases/latest" target="_blank" class="btn-buy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path
+                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
+                </svg>
+                Download VSIX
+            </a>
+        </div>
+    </section>
+
+    <section id="how-to" class="how-to">
+        <h2>Cách cài đặt nhanh</h2>
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h4>Tải file VSIX</h4>
+                <p>Nhấn nút tải về bản mới nhất từ trình duyệt này.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h4>Mở VS Code</h4>
+                <p>Mở mục Extensions (Ctrl+Shift+X) trong trình biên soạn.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h4>Cài đặt</h4>
+                <p>Bấm dấu (...) chọn Install from VSIX và chọn file đã tải.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 TXA TEAM. Chuyên gia cung cấp giải pháp VS Code hàng đầu Việt Nam.</p>
+        <p style="margin-top:10px; font-size:0.8rem; opacity:0.6;">Powered by Antigravity AI Engine v3.2.2</p>
+    </footer>
 
     <script>
-        async function initMarketplace() {
-            const btn = document.getElementById('btn-download');
-            const versionEl = document.getElementById('info-version');
+        async function syncStore() {
+            const btn = document.getElementById('btn-auto-accept');
+            const label = document.getElementById('label-auto-accept');
             const repo = 'TXAVLOG/txa-auto-accept';
 
             try {
@@ -304,24 +409,20 @@
                 if (data && data.assets) {
                     const asset = data.assets.find(a => a.name.endsWith('.vsix'));
                     if (asset) {
-                        const tag = data.tag_name;
-                        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3"/></svg> Download VSIX (${tag})`;
-                        versionEl.innerText = `${tag} (Latest)`;
-
+                        label.innerText = `Download VSIX (${data.tag_name})`;
                         btn.onclick = () => {
                             window.location.href = asset.browser_download_url;
                         };
                     }
                 }
             } catch (err) {
-                console.error('Marketplace sync error:', err);
-                btn.innerText = 'Tải bản v3.2.2 (Offline)';
+                label.innerText = 'Download VSIX (v3.2.2)';
                 btn.onclick = () => {
                     window.location.href = `https://github.com/${repo}/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix`;
                 };
             }
         }
-        initMarketplace();
+        syncStore();
     </script>
 </body>
 
