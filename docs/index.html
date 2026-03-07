@@ -272,13 +272,85 @@
             margin: 0 auto 1.5rem auto;
         }
 
-        .step-card h4 {
-            margin-bottom: 0.5rem;
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-dark);
         }
 
-        .step-card p {
+        /* --- TXToast Glassmorphism --- */
+        .tx-toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .tx-toast {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px 20px;
+            color: #fff;
             font-size: 0.9rem;
-            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: toastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            min-width: 280px;
+            border-left: 4px solid var(--primary);
+            pointer-events: auto;
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(100%) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .toast-out {
+            animation: toastOut 0.4s ease-in forwards;
+        }
+
+        @keyframes toastOut {
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .btn-demo {
+            background: rgba(56, 189, 248, 0.1) !important;
+            color: var(--primary) !important;
+            border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        }
+
+        .btn-demo:hover {
+            background: rgba(56, 189, 248, 0.2) !important;
+            border-color: var(--primary) !important;
         }
 
         footer {
@@ -301,6 +373,7 @@
 </head>
 
 <body>
+    <div class="tx-toast-container" id="toast-container"></div>
     <nav>
         <div class="nav-brand">TXA TEAM STORE</div>
         <div class="nav-links">
@@ -360,13 +433,22 @@
             </div>
             <p class="desc">Đưa đồng hồ thời gian thực lên thanh Status Bar với khả năng tùy biến format cực mạnh (giờ,
                 phút, giây, thứ, ngày tháng).</p>
-            <a href="https://github.com/TXAVLOG/txa-status-clock/releases/latest" target="_blank" class="btn-buy">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path
-                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
-                </svg>
-                Download VSIX
-            </a>
+            <div class="card-actions">
+                <a href="javascript:void(0)" class="btn-buy btn-demo" onclick="showDemoToast()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
+                    Live Demo
+                </a>
+                <a href="https://github.com/TXAVLOG/txa-status-clock/releases/latest" target="_blank" class="btn-buy">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path
+                            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    VSIX
+                </a>
+            </div>
         </div>
     </section>
 
@@ -397,6 +479,31 @@
     </footer>
 
     <script>
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'tx-toast';
+            toast.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>${msg}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('toast-out');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function showDemoToast() {
+            showToast('TX Status Clock: Engine đang chạy ngầm...');
+            setTimeout(() => {
+                const now = new Date();
+                const time = now.toLocaleTimeString('vi-VN');
+                showToast(`[Demo] Thời gian thực: ${time}`);
+            }, 800);
+        }
+
         async function syncStore() {
             const btn = document.getElementById('btn-auto-accept');
             const label = document.getElementById('label-auto-accept');
@@ -417,6 +524,8 @@
                 }
             } catch (err) {
                 label.innerText = 'Download VSIX (v3.2.2)';
+                console.log(err);
+                console.warn("Failed to sync store, using fallback URL");
                 btn.onclick = () => {
                     window.location.href = `https://github.com/${repo}/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix`;
                 };
