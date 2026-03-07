@@ -172,6 +172,9 @@ function activate(context) {
                     updateStatusBar();
                     vscode.window.showInformationMessage('Counter and Logs have been reset.');
                     return;
+                case 'openLink':
+                    vscode.env.openExternal(vscode.Uri.parse(message.url));
+                    return;
             }
         });
     });

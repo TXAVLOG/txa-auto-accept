@@ -372,6 +372,29 @@ function getWebviewContent(config, state, suggestions) {
             100% { transform: scale(1); opacity: 1; }
         }
 
+        .star-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1.5rem;
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .star-link:hover {
+            background: rgba(251, 191, 36, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
+        }
+
         .log-list {
             background: rgba(0, 0, 0, 0.3);
             border-radius: var(--radius-md);
@@ -672,6 +695,11 @@ function getWebviewContent(config, state, suggestions) {
                 <span class="status-dot"></span>
                 ${t.engineStatus}
             </div>
+
+            <a href="https://github.com/TXAVLOG/txa-auto-accept" class="star-link" id="star-github">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                ${t.starOnGithub}
+            </a>
             
             <div class="log-header">
                 <h3>${t.logTitle}</h3>
@@ -1024,6 +1052,11 @@ function getWebviewContent(config, state, suggestions) {
                 btn.innerHTML = originalHTML;
                 btn.style.opacity = '1';
             }, 600);
+        };
+
+        document.getElementById('star-github').onclick = (e) => {
+            e.preventDefault();
+            vscode.postMessage({ command: 'openLink', url: 'https://github.com/TXAVLOG/txa-auto-accept' });
         };
 
         document.getElementById('btn-clear-log').onclick = () => {

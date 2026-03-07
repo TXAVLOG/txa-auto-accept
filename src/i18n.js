@@ -43,7 +43,8 @@ module.exports = {
         errorLoad: "❌ Lỗi khi tải cấu hình extension.",
         statusBarTooltip: "🎯 TXA AUTO ACCEPT {0}\n🌊 Liquid Glass Morphism\nClick để mở Dashboard.",
         resetCounter: "Đặt lại số đếm",
-        engineStatus: "Đang sẵn sàng và giám sát..."
+        engineStatus: "Đang sẵn sàng và giám sát...",
+        starOnGithub: "Ủng hộ Star trên GitHub ⭐"
     },
     en: {
         title: "TXA AUTO ACCEPT",
@@ -89,6 +90,7 @@ module.exports = {
         errorLoad: "❌ Error loading extension configuration.",
         statusBarTooltip: "🎯 TXA AUTO ACCEPT {0}\n🌊 Liquid Glass Morphism\nClick to open Dashboard.",
         resetCounter: "Reset Counter",
-        engineStatus: "Ready and monitoring..."
+        engineStatus: "Ready and monitoring...",
+        starOnGithub: "Star on GitHub ⭐"
     }
 };
