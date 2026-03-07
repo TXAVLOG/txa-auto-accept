@@ -2,7 +2,7 @@
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
     "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
-    "version": "3.2.2",
+    "version": "3.2.3",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
@@ -25,6 +25,29 @@
             {
                 "command": "txa-auto-accept.openDashboard",
                 "title": "TXA: Open Dashboard"
+            },
+            {
+                "command": "txa-auto-accept.toggleEngine",
+                "title": "TXA: Toggle Engine (Enable/Disable)"
+            },
+            {
+                "command": "txa-auto-accept.resetCounter",
+                "title": "TXA: Reset Counter & Logs"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "txa-auto-accept.openDashboard",
+                "key": "alt+shift+a",
+                "mac": "cmd+alt+a"
+            },
+            {
+                "command": "txa-auto-accept.toggleEngine",
+                "key": "alt+a"
+            },
+            {
+                "command": "txa-auto-accept.resetCounter",
+                "key": "alt+r"
             }
         ],
         "configuration": {

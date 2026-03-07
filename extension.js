@@ -35,7 +35,7 @@ function activate(context) {
 
         statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ / ${state.denied}✗`;
         statusBarItem.color = autoClick ? '#3dd68c' : '#ff5f6d';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v3.2.2');
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v3.2.3');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW
@@ -163,14 +163,7 @@ function activate(context) {
                     vscode.window.showInformationMessage('Shield Deny-List Secured!');
                     return;
                 case 'resetCounter':
-                    state.clicks = 0;
-                    state.denied = 0;
-                    state.log = [];
-                    context.globalState.update('clicks', 0);
-                    context.globalState.update('denied', 0);
-                    context.globalState.update('log', []);
-                    updateStatusBar();
-                    vscode.window.showInformationMessage('Counter and Logs have been reset.');
+                    vscode.commands.executeCommand('txa-auto-accept.resetCounter');
                     return;
                 case 'openLink':
                     vscode.env.openExternal(vscode.Uri.parse(message.url));
@@ -180,6 +173,29 @@ function activate(context) {
     });
 
     context.subscriptions.push(disposable);
+
+    // Register Toggle Engine command
+    context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleEngine', () => {
+        const config = vscode.workspace.getConfiguration('txa-auto-accept');
+        const current = config.get('autoClick', true);
+        config.update('autoClick', !current, vscode.ConfigurationTarget.Global).then(() => {
+            const statusMsg = !current ? 'TXA Engine Activated! 🚀' : 'TXA Engine Paused! ⏸️';
+            vscode.window.showInformationMessage(statusMsg);
+            updateStatusBar();
+        });
+    }));
+
+    // Register Reset Counter command
+    context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.resetCounter', () => {
+        state.clicks = 0;
+        state.denied = 0;
+        state.log = [];
+        context.globalState.update('clicks', 0);
+        context.globalState.update('denied', 0);
+        context.globalState.update('log', []);
+        updateStatusBar();
+        vscode.window.showInformationMessage('Counter and Logs have been reset.');
+    }));
 
     // Watch config changes and Live Restart Engine
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
