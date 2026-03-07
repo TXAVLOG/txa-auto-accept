@@ -1,6 +1,6 @@
 # 🛡️ TXA Auto Accept - Premium Edition
 
-[![Version](https://img.shields.io/badge/version-3.2.3-blue.svg)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-3.2.4-blue.svg)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept.svg)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -17,7 +17,14 @@
 
 ## 🚀 Hướng dẫn cài đặt
 
-1. Truy cập vào mục [Releases](https://github.com/TXAVLOG/txa-auto-accept/releases).
+Bạn có thể cài đặt **TXA Auto Accept** theo 1 trong 2 cách sau:
+
+### Cách 1: Cài đặt qua Open VSX(Recommend)
+1. Truy cập [Open VSX Registry - TXA Auto Accept](https://open-vsx.org/extension/txa-team/txa-auto-accept).
+2. Tải về hoặc cài đặt trực tiếp từ chợ ứng dụng của trình biên soạn hỗ trợ Open VSX.
+
+### Cách 2: Cài đặt thủ công bằng file VSIX (Dành cho VS Code)
+1. Truy cập vào [Cửa hàng TXA TEAM](https://txavlog.github.io/txa-auto-accept/) hoặc mục [Releases](https://github.com/TXAVLOG/txa-auto-accept/releases).
 2. Tải file `.vsix` phiên bản mới nhất.
 3. Trong VS Code, mở tab **Extensions** (`Ctrl+Shift+X`).
 4. Bấm vào dấu ba chấm `...` ở góc trên bên phải và chọn **Install from VSIX...**.

@@ -2,7 +2,7 @@
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
     "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
-    "version": "3.2.3",
+    "version": "3.2.4",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
@@ -14,7 +14,15 @@
         "vscode": "^1.80.0"
     },
     "categories": [
-        "Other"
+        "Other",
+        "Keymaps"
+    ],
+    "keywords": [
+        "phím tắt",
+        "shortcuts",
+        "auto accept",
+        "glassmorphism",
+        "security shield"
     ],
     "activationEvents": [
         "onStartupFinished"

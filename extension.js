@@ -35,7 +35,7 @@ function activate(context) {
 
         statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ / ${state.denied}✗`;
         statusBarItem.color = autoClick ? '#3dd68c' : '#ff5f6d';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v3.2.3');
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v3.2.4');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW
