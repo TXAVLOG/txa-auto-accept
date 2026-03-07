@@ -4,7 +4,7 @@ const getCSS = require('./webview-css');
 const getHTML = require('./webview-html');
 const getJS = require('./webview-js');
 
-function getWebviewContent(config, state, suggestions) {
+function getWebviewContent(config, state, suggestions, audioData) {
     const lang = config.get('language', 'vi');
     const t = i18n[lang] || i18n.en;
 
@@ -18,7 +18,7 @@ function getWebviewContent(config, state, suggestions) {
 </head>
 <body>
     ${getHTML(config, state, t, LOGO_SVG)}
-    <script>${getJS(state, BUILTIN_DENY, suggestions)}</script>
+    <script>${getJS(state, BUILTIN_DENY, suggestions, audioData)}</script>
 </body>
 </html>`;
 }

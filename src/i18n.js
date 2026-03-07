@@ -1,7 +1,7 @@
 module.exports = {
     vi: {
         title: "TXA AUTO ACCEPT",
-        version: "v4.0.4",
+        version: "v4.0.6",
         monitor: "GIÁM SÁT",
         config: "CẤU HÌNH",
         shield: "LÁ CHẮN",
@@ -36,7 +36,7 @@ module.exports = {
         scrollDesc: "Tự động cuộn tới nút mục tiêu trước khi bấm",
         customSelector: "Target Lock (CSS)",
         customSelectorDesc: "Chọn cụ thể nút (Ví dụ: button.primary)",
-        startupMsg: "🚀 TXA AUTO ACCEPT v4.0 — Liquid Glass Engine đã sẵn sàng!",
+        startupMsg: "🚀 TXA AUTO ACCEPT {0} — Liquid Glass Engine đã sẵn sàng!",
         configSaved: "✅ Đã lưu cấu hình thành công!",
         shieldUpdated: "🛡️ Danh sách bảo vệ đã được cập nhật!",
         clearLogConfirm: "🗑️ Nhật ký đã được xóa sạch!",
@@ -49,17 +49,20 @@ module.exports = {
         uptime: "Thời gian hoạt động",
         totalProcessed: "Tổng xử lý",
         aboutTitle: "Giới thiệu",
-        aboutDesc: "Extension bảo vệ terminal AI-powered cho VS Code.",
+        aboutDesc: "Hệ thống bảo vệ Terminal & Tự động phản hồi (Auto-Responder) mạnh mẽ cho VS Code.",
+        terminalProtection: "🛡️ Đang giám sát Terminal",
         madeWith: "Được tạo với ❤️ bởi TXA Team",
         version_label: "Phiên bản",
         license: "Giấy phép",
         searchShield: "Tìm kiếm rule...",
         exportRules: "Xuất Rules",
-        importRules: "Nhập Rules"
+        importRules: "Nhập Rules",
+        sandboxWarning: "⚠️ Lưu ý: Sandbox của VS Code hạn chế Dashboard ko thể 'nhòm' ra ngoài IDE.",
+        devToolsTip: "Để lấy CSS Selector bên ngoài IDE, hãy nhấn Ctrl+Shift+I (DevTools) rồi copy Selector mong muốn dán vào đây."
     },
     en: {
         title: "TXA AUTO ACCEPT",
-        version: "v4.0.4",
+        version: "v4.0.6",
         monitor: "MONITOR",
         config: "CONFIG",
         shield: "SHIELD",
@@ -94,7 +97,7 @@ module.exports = {
         scrollDesc: "Auto-scroll to target before clicking",
         customSelector: "Target Lock (CSS)",
         customSelectorDesc: "Specify selector (e.g. button.primary)",
-        startupMsg: "🚀 TXA AUTO ACCEPT v4.0.4 — Liquid Glass Engine is ready!",
+        startupMsg: "🚀 TXA AUTO ACCEPT {0} — Liquid Glass Engine is ready!",
         configSaved: "✅ Configuration saved successfully!",
         shieldUpdated: "🛡️ Protection Shield updated!",
         clearLogConfirm: "🗑️ System logs cleared!",
@@ -107,12 +110,15 @@ module.exports = {
         uptime: "Uptime",
         totalProcessed: "Total Processed",
         aboutTitle: "About",
-        aboutDesc: "AI-powered terminal protection extension for VS Code.",
+        aboutDesc: "Powerful Terminal Protection & Auto-Responder system for VS Code.",
+        terminalProtection: "🛡️ Monitoring Terminals",
         madeWith: "Made with ❤️ by TXA Team",
         version_label: "Version",
         license: "License",
         searchShield: "Search rules...",
         exportRules: "Export Rules",
-        importRules: "Import Rules"
+        importRules: "Import Rules",
+        sandboxWarning: "⚠️ Note: VS Code Sandbox restricts the Dashboard from reaching beyond its frame.",
+        devToolsTip: "To get CSS Selectors for the IDE, press Ctrl+Shift+I (DevTools), find the element, and paste the selector here."
     }
 };

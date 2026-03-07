@@ -4,6 +4,20 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [4.0.6] - 2026-03-07
+### Added
+- Tích hợp âm thanh thông báo cao cấp "Quantum Bloom" (Đã qua xử lý fade/trim).
+- Chuyển âm thanh sang cơ chế Base64 để hoạt động ổn định trên mọi môi trường.
+- Đồng bộ hóa phiên bản hệ thống lên v4.0.6.
+
+## [4.0.5] - 2026-03-07
+### Added
+- Âm thanh thông báo (Sound Notifications) khi chặn hoặc chấp nhận mục tiêu.
+- Mở rộng chi tiết nhật ký (Log Details) khi nhấp vào dòng log.
+- Cải thiện bộ đếm thời gian (Uptime Ticker): Tự động tạm dừng khi Engine tắt.
+- Bố sung nhãn (Label) và tooltip giải thích cho bộ đếm Uptime.
+- Tên phiên bản trong thông báo khởi động giờ đã được cập nhật tự động.
+
 ## [4.0.4] - 2026-03-07
 ### Added
 - Thiết kế lại mục Tính năng trong README sang phong cách hiện đại, bền vững hơn.

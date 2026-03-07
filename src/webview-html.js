@@ -13,7 +13,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                 <div class="logo-wrapper">${LOGO_SVG}</div>
                 <div class="brand-text">
                     <h1>${t.title}</h1>
-                    <span>v4.0.4 · Liquid Glass Engine</span>
+                    <span>v4.0.6 · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
                 </div>
             </div>
             <div class="nav-tabs">
@@ -58,11 +58,14 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                 </div>
             </div>
 
-            <div class="uptime-display" id="uptime-display">⏱ 00:00:00</div>
+            <div class="uptime-display" id="uptime-display" data-tip="Engine persistence time / Thời gian engine duy trì hoạt động">
+                <span class="uptime-label">${t.uptime}:</span>
+                <span id="uptime-val">⏱ 00:00:00</span>
+            </div>
 
             <div class="engine-status">
                 <span class="status-dot"></span>
-                ${t.engineStatus}
+                <span id="status-text">${t.engineStatus} v4.0.6</span>
             </div>
 
             <div class="action-row">
@@ -108,6 +111,10 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                         </button>
                     </div>
                 </div>
+                <div class="sandbox-guide" style="padding:1rem;background:rgba(251,191,36,0.05);border-radius:var(--radius-sm);border:1px dashed rgba(251,191,36,0.2);margin-top:-0.5rem">
+                    <p style="font-size:0.72rem;color:var(--warning);line-height:1.4">${t.sandboxWarning}</p>
+                    <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;font-style:italic">${t.devToolsTip}</p>
+                </div>
                 <div class="config-row">
                     <div class="row-info"><h3>${t.scanInterval}</h3><p>${t.scanDesc}</p></div>
                     <input type="number" id="cfg-interval" value="${config.get('scanInterval', 3000)}" style="width:100px;text-align:center">
@@ -115,6 +122,13 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                 <div class="config-row">
                     <div class="row-info"><h3>${t.idleSeconds}</h3><p>${t.idleDesc}</p></div>
                     <input type="number" id="cfg-idle" value="${config.get('idleSeconds', 5)}" style="width:100px;text-align:center">
+                </div>
+                <div class="config-row">
+                    <div class="row-info"><h3>${lang === 'vi' ? 'Âm thanh thông báo' : 'Sound Notifications'}</h3><p>${lang === 'vi' ? 'Phát âm thanh khi chặn lệnh nguy hiểm' : 'Play sound when blocking threats'}</p></div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button id="btn-test-sound" class="btn-action" data-tip="Test Sound">🔊</button>
+                        <label class="switch"><input type="checkbox" id="cfg-sound" ${config.get('soundEnabled', true) ? 'checked' : ''}><span class="slider"></span></label>
+                    </div>
                 </div>
             </div>
             <button class="btn-main" id="btn-save-cfg">
@@ -147,7 +161,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
             <div class="about-panel">
                 <div class="about-logo">${LOGO_SVG}</div>
                 <div class="about-title">${t.title}</div>
-                <div class="about-version">v4.0.4 · Liquid Glass Engine 2026</div>
+                <div class="about-version">v4.0.6 · Liquid Glass Engine 2026</div>
                 <p class="about-desc">${t.aboutDesc}</p>
                 <div class="about-links">
                     <a href="#" class="about-link" id="link-github">

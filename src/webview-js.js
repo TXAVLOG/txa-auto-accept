@@ -1,10 +1,12 @@
-module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
+module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
     return `
         const vscode = acquireVsCodeApi();
         let state = ${JSON.stringify(state)};
         const builtIn = ${JSON.stringify(BUILTIN_DENY)};
         const SUGGESTS = ${JSON.stringify(suggestions)};
-        const startTime = Date.now();
+        const AUDIO_DATA = ${JSON.stringify(audioData)};
+        let uptimeSeconds = state.uptime || 0;
+        let isEngineActive = true; 
 
         // === PARTICLE SYSTEM ===
         (function initParticles() {
@@ -86,14 +88,34 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
             }
         });
 
-        // === UPTIME TICKER ===
-        setInterval(() => {
-            const diff = Math.floor((Date.now() - startTime) / 1000);
-            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
-            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-            const s = String(diff % 60).padStart(2, '0');
-            document.getElementById('uptime-display').textContent = '⏱ ' + h + ':' + m + ':' + s;
-        }, 1000);
+        // === UPTIME DISPLAY ===
+        function updateUptimeDisplay() {
+            const h = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+            const s = String(uptimeSeconds % 60).padStart(2, '0');
+            const el = document.getElementById('uptime-val');
+            if (el) el.textContent = '⏱ ' + h + ':' + m + ':' + s;
+        }
+
+        // Timer no longer increments here, it's synced from extension.js
+        updateUptimeDisplay();
+
+        // === SOUND SYSTEM ===
+        const SOUNDS = {
+            blocked: new Audio(AUDIO_DATA || 'https://www.soundjay.com/buttons/sounds/button-10.mp3'),
+            accepted: new Audio(AUDIO_DATA || 'https://www.soundjay.com/buttons/sounds/button-20.mp3')
+        };
+        SOUNDS.blocked.volume = 0.4;
+        SOUNDS.accepted.volume = 0.2;
+
+        function playSound(type) {
+            const enabled = document.getElementById('cfg-sound').checked;
+            if (enabled && SOUNDS[type]) {
+                const s = SOUNDS[type].cloneNode();
+                s.volume = SOUNDS[type].volume;
+                s.play().catch(() => {});
+            }
+        }
 
         // === THREAT METER ===
         function updateThreat() {
@@ -116,16 +138,30 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
                 if (state.clicks !== msg.clicks) {
                     accEl.innerText = msg.clicks;
                     accEl.classList.remove('changed'); void accEl.offsetWidth; accEl.classList.add('changed');
+                    playSound('accepted');
                 }
                 if (state.denied !== msg.denied) {
                     denEl.innerText = msg.denied;
                     denEl.classList.remove('changed'); void denEl.offsetWidth; denEl.classList.add('changed');
+                    playSound('blocked');
                 }
+                isEngineActive = msg.autoClick;
                 state.clicks = msg.clicks;
                 state.denied = msg.denied;
                 state.log = msg.log;
+                uptimeSeconds = msg.uptime;
                 renderLogs();
                 updateThreat();
+                updateUptimeDisplay();
+                
+                // Update engine status dot & text
+                const dot = document.querySelector('.status-dot');
+                if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--error)';
+                const stext = document.getElementById('status-text');
+                if (stext) stext.textContent = (isEngineActive ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') + ' v4.0.6';
+            } else if (msg.command === 'updateUptime') {
+                uptimeSeconds = msg.uptime;
+                updateUptimeDisplay();
             }
         });
 
@@ -137,16 +173,33 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
                 list.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:.85rem;border:1px dashed rgba(255,255,255,0.08);border-radius:8px;margin:5px">No logs recorded yet.</div>';
                 return;
             }
-            state.log.slice(0, 30).forEach(item => {
+            state.log.slice(0, 30).forEach((item, i) => {
                 const div = document.createElement('div');
                 div.className = 'log-item ' + (item.status === 'denied' ? 'denied' : 'accepted');
-                div.innerHTML = '<span class="log-time">' + item.t + '</span><span class="log-cmd">' + item.cmd + '</span><span class="log-status">' + (item.status === 'denied' ? 'Blocked' : 'Allowed') + '</span>';
+                div.onclick = () => div.classList.toggle('expanded');
+                div.innerHTML = \`
+                    <div class="log-main">
+                        <span class="log-time">\${item.t}</span>
+                        <span class="log-cmd">\${item.cmd}</span>
+                        <span class="log-status">\${item.status === 'denied' ? 'Blocked' : 'Allowed'}</span>
+                    </div>
+                    <div class="log-details">
+                        <p><strong>Reason:</strong> \${item.status === 'denied' ? 'Command matched a restricted pattern in the Protection Shield.' : 'Target detected and auto-clicked as expected.'}</p>
+                        <p><strong>Impact:</strong> \${item.status === 'denied' ? 'Prevented potential system instability or data loss.' : 'Workflow automation continued successfully.'}</p>
+                    </div>
+                \`;
                 list.insertBefore(div, list.firstChild);
             });
         }
 
         // === RENDER DENY LIST ===
         let searchFilter = '';
+        function highlight(text) {
+            if (!searchFilter) return text;
+            const re = new RegExp('(' + searchFilter.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ')', 'gi');
+            return text.replace(re, '<mark class="search-highlight">$1</mark>');
+        }
+
         function renderDenyList() {
             const grid = document.getElementById('deny-list');
             grid.innerHTML = '';
@@ -155,14 +208,14 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
                 if (filter && !rule.label.toLowerCase().includes(filter)) return;
                 const item = document.createElement('div');
                 item.className = 'deny-item custom';
-                item.innerHTML = '<div class="deny-info"><span class="deny-badge badge-custom">Custom</span><span class="deny-label">' + rule.label + '</span></div><button class="btn-remove" onclick="removeRule(' + i + ',this)" data-tip="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+                item.innerHTML = '<div class="deny-info"><span class="deny-badge badge-custom">Custom</span><span class="deny-label">' + highlight(rule.label) + '</span></div><button class="btn-remove" onclick="removeRule(' + i + ',this)" data-tip="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
                 grid.appendChild(item);
             });
             builtIn.forEach(rule => {
                 if (filter && !rule.label.toLowerCase().includes(filter)) return;
                 const item = document.createElement('div');
                 item.className = 'deny-item system';
-                item.innerHTML = '<div class="deny-info"><span class="deny-badge badge-system">System</span><span class="deny-label">' + rule.label + '</span></div>';
+                item.innerHTML = '<div class="deny-info"><span class="deny-badge badge-system">System</span><span class="deny-label">' + highlight(rule.label) + '</span></div>';
                 grid.appendChild(item);
             });
         }
@@ -214,6 +267,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
         document.body.appendChild(pickerTooltip);
 
         document.getElementById('btn-pick-element').onclick = () => {
+            alert("⚠️ Pick Mode activated inside Dashboard frame.\nTo pick elements outside in the IDE, please use VS Code DevTools (Ctrl+Shift+I).");
             isPickingMode = true;
             pickerOverlay.style.display = 'block';
             pickerBadge.style.display = 'block';
@@ -296,6 +350,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
                 autoClick: document.getElementById('cfg-autoclick').checked,
                 scanInterval: parseInt(document.getElementById('cfg-interval').value) || 3000,
                 idleSeconds: parseInt(document.getElementById('cfg-idle').value) || 5,
+                soundEnabled: document.getElementById('cfg-sound').checked,
                 customSelector: document.getElementById('cfg-selector').value.trim()
             });
             setTimeout(() => { btn.innerHTML = orig; btn.style.opacity = '1'; }, 700);
@@ -313,6 +368,8 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions) {
             vscode.postMessage({ command: 'resetCounter' });
             updateThreat();
         };
+
+        document.getElementById('btn-test-sound').onclick = () => playSound('accepted');
 
         // Init
         renderLogs();

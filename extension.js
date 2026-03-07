@@ -1,4 +1,6 @@
 const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
 const { getWebviewContent } = require('./src/webview');
 const i18n = require('./src/i18n');
 
@@ -12,8 +14,19 @@ function activate(context) {
     const lang = config.get('language', 'vi');
     const t = i18n[lang] || i18n.en;
 
+    const VERSION = 'v4.0.6';
     // Startup notification
-    vscode.window.showInformationMessage(t.startupMsg);
+    vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
+
+    function getAudioData() {
+        try {
+            const audioPath = path.join(context.extensionPath, 'src', 'assets', 'notify.mp3');
+            if (fs.existsSync(audioPath)) {
+                return `data:audio/mp3;base64,${fs.readFileSync(audioPath).toString('base64')}`;
+            }
+        } catch (e) { }
+        return null;
+    }
 
     let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
     statusBarItem.command = 'txa-auto-accept.openDashboard';
@@ -24,7 +37,8 @@ function activate(context) {
         clicks: context.globalState.get('clicks', 0),
         denied: context.globalState.get('denied', 0),
         log: context.globalState.get('log', []),
-        denyList: context.globalState.get('denyList', [])
+        denyList: context.globalState.get('denyList', []),
+        uptime: context.globalState.get('uptime', 0)
     };
 
     function updateStatusBar() {
@@ -35,7 +49,7 @@ function activate(context) {
 
         statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗`;
         statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.4');
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.6');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW
@@ -44,10 +58,24 @@ function activate(context) {
                 command: 'updateStats',
                 clicks: state.clicks,
                 denied: state.denied,
-                log: state.log
+                log: state.log,
+                autoClick: autoClick,
+                uptime: state.uptime
             });
         }
     }
+
+    // Persistent Uptime Ticker in Core
+    setInterval(() => {
+        const config = vscode.workspace.getConfiguration('txa-auto-accept');
+        if (config.get('autoClick', true)) {
+            state.uptime++;
+            context.globalState.update('uptime', state.uptime);
+            if (activePanel) {
+                activePanel.webview.postMessage({ command: 'updateUptime', uptime: state.uptime });
+            }
+        }
+    }, 1000);
 
     updateStatusBar();
 
@@ -106,6 +134,29 @@ function activate(context) {
         const config = vscode.workspace.getConfiguration('txa-auto-accept');
         const autoClick = config.get('autoClick', true);
         if (!autoClick) return;
+
+        // Monitor terminals for prompts
+        context.subscriptions.push(vscode.window.onDidWriteTerminalData(e => {
+            const config = vscode.workspace.getConfiguration('txa-auto-accept');
+            if (!config.get('autoClick', true)) return;
+
+            const data = e.data;
+            // Detect common confirmation prompts: [y/N], (y/n), etc.
+            if (/\[[Yy]\/[Nn]\]|\([Yy]\/[Nn]\)|\? \(Y\/n\)/.test(data)) {
+                // Check if the previous text in terminal was dangerous (simple buffer check)
+                // For now, let's just do a smart auto-accept for benign ones
+                setTimeout(() => {
+                    e.terminal.sendText('y');
+                    handleAction('acc', `Auto-Accepted Prompt in ${e.terminal.name}`);
+                }, 500);
+            }
+
+            // Shield Check: If dangerous pattern appears in terminal output (like a cat command showing sensitive info)
+            if (checkDenyList(data)) {
+                handleAction('den', `Blocked/Detected Threat in Terminal: ${e.terminal.name}`);
+                vscode.window.showWarningMessage(`🛡️ TXA Shield: Detected threat in ${e.terminal.name}! Check your dashboard.`);
+            }
+        }));
     }
 
     startEngine();
@@ -127,7 +178,7 @@ function activate(context) {
         const config = vscode.workspace.getConfiguration('txa-auto-accept');
         const suggestions = require('./src/suggestions');
         const { getWebviewContent } = require('./src/webview');
-        activePanel.webview.html = getWebviewContent(config, state, suggestions);
+        activePanel.webview.html = getWebviewContent(config, state, suggestions, getAudioData());
 
         activePanel.onDidDispose(() => {
             activePanel = null;
@@ -181,9 +232,11 @@ function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.resetCounter', () => {
         state.clicks = 0;
         state.denied = 0;
+        state.uptime = 0;
         state.log = [];
         context.globalState.update('clicks', 0);
         context.globalState.update('denied', 0);
+        context.globalState.update('uptime', 0);
         context.globalState.update('log', []);
         updateStatusBar();
         vscode.window.showInformationMessage('🔄 Counter and Logs have been reset.');
@@ -199,7 +252,7 @@ function activate(context) {
                 const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
                 const suggestions = require('./src/suggestions');
                 const { getWebviewContent } = require('./src/webview');
-                activePanel.webview.html = getWebviewContent(cfg, state, suggestions);
+                activePanel.webview.html = getWebviewContent(cfg, state, suggestions, getAudioData());
             }
         }
     }));

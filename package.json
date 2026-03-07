@@ -2,7 +2,7 @@
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
     "description": "Auto Accept Engine with Liquid Glass 2026 Dashboard, Aurora Particles, Threat Meter & Shield Deny-List.",
-    "version": "4.0.4",
+    "version": "4.0.6",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
@@ -12,6 +12,9 @@
         "url": "https://github.com/TXAVLOG/txa-auto-accept"
     },
     "homepage": "https://txavlog.github.io/txa-auto-accept/",
+    "enabledApiProposals": [
+        "terminalDataWriteEvent"
+    ],
     "bugs": {
         "url": "https://github.com/TXAVLOG/txa-auto-accept/issues"
     },
