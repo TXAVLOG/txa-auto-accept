@@ -579,15 +579,18 @@
                         Đang lấy phiên bản...</div>
                 </div>
             </div>
-            <p class="desc">Tự động bấm nút Accept/Submit thông minh, đi kèm hệ thống Shield chặn lệnh nguy hiểm và
-                Dashboard giám sát cực đẹp.</p>
+            <p class="desc">Tự động bấm nút Accept/Submit thông minh, đi kèm hệ thống Shield 60+ rules chặn lệnh nguy hiểm và
+                Dashboard Liquid Glass 2026 với Aurora Particles.</p>
             <div class="card-meta" style="margin-bottom: 1.5rem;">
                 <div style="font-size: 0.8rem; margin-bottom: 8px;"><strong
-                        style="color:var(--text-muted)">Categories:</strong> Other, Utility</div>
+                        style="color:var(--text-muted)">Categories:</strong> Other, Keymaps, Formatters</div>
                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                     <span class="tag" style="color:#fff;">Auto Accept</span>
                     <span class="tag" style="color:#fff;">Shield Protection</span>
-                    <span class="tag" style="color:#fff;">Liquid Glass</span>
+                    <span class="tag" style="color:#fff;">Liquid Glass 2026</span>
+                    <span class="tag" style="color:#fff;">Aurora UI</span>
+                    <span class="tag" style="color:#fff;">Threat Meter</span>
+                    <span class="tag" style="color:#fff;">Terminal Security</span>
                 </div>
             </div>
             <div class="card-actions" style="grid-template-columns: 1fr;">
@@ -766,9 +769,9 @@
                 }
             } catch (err) {
                 console.error('Marketplace sync error:', err);
-                btnLabel.innerText = `Tải xuống - v3.2.5`;
+                btnLabel.innerText = `Tải xuống - v4.0.0`;
                 btnActual.onclick = () => {
-                    window.location.href = `https://github.com/${repo}/releases/download/v3.2.5/txa-auto-accept-3.2.5.vsix`;
+                    window.location.href = `https://github.com/${repo}/releases/download/v4.0.0/txa-auto-accept-4.0.0.vsix`;
                     closeDownloadModal();
                 };
             }

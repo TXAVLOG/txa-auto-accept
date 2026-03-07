@@ -33,9 +33,9 @@ function activate(context) {
         const currentLang = config.get('language', 'vi');
         const currentT = i18n[currentLang] || i18n.en;
 
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ / ${state.denied}✗`;
-        statusBarItem.color = autoClick ? '#3dd68c' : '#ff5f6d';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v3.2.5');
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗`;
+        statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.0');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW
@@ -69,7 +69,7 @@ function activate(context) {
         updateStatusBar();
     }
 
-    // Register manual command (can be called by external scripts or hotkeys)
+    // Register manual command
     vscode.commands.registerCommand('txa-auto-accept.simulateAction', handleAction);
 
     // ==========================================
@@ -86,35 +86,28 @@ function activate(context) {
             }
             return new RegExp(pattern, 'i');
         } catch (e) {
-            return new RegExp('.^'); // Match nothing on error
+            return new RegExp('.^');
         }
     }
 
     function checkDenyList(actionText) {
         const { BUILTIN_DENY } = require('./src/constants');
         const customRules = state.denyList || [];
-
         for (const rule of [...customRules, ...BUILTIN_DENY]) {
             if (parseRegex(rule.pattern).test(actionText)) {
-                return true; // Malicious/Denied
+                return true;
             }
         }
-        return false; // Safe
+        return false;
     }
 
     function startEngine() {
         if (engineTimer) clearInterval(engineTimer);
-
         const config = vscode.workspace.getConfiguration('txa-auto-accept');
         const autoClick = config.get('autoClick', true);
-
-        if (!autoClick) return; // Engine paused
-
-        // The engine is now waiting for real signals or external triggers.
-        // Simulation removed as per user request to be more practical.
+        if (!autoClick) return;
     }
 
-    // Start engine on activation
     startEngine();
 
     // Command to open dashboard
@@ -126,7 +119,7 @@ function activate(context) {
 
         activePanel = vscode.window.createWebviewPanel(
             'txaDashboard',
-            'TXA AUTO ACCEPT - Premium',
+            'TXA AUTO ACCEPT — Liquid Glass',
             vscode.ViewColumn.One,
             { enableScripts: true, retainContextWhenHidden: true }
         );
@@ -149,8 +142,7 @@ function activate(context) {
                             cfg.update('language', message.language, vscode.ConfigurationTarget.Global).then(() => {
                                 cfg.update('idleSeconds', message.idleSeconds, vscode.ConfigurationTarget.Global).then(() => {
                                     cfg.update('customSelector', message.customSelector, vscode.ConfigurationTarget.Global).then(() => {
-                                        vscode.window.showInformationMessage('TXA Engine Configuration Updated!');
-                                        // Engine will restart automatically via onDidChangeConfiguration
+                                        vscode.window.showInformationMessage('✅ TXA Engine Configuration Updated!');
                                     });
                                 });
                             });
@@ -160,7 +152,7 @@ function activate(context) {
                 case 'saveDenyList':
                     state.denyList = message.list;
                     context.globalState.update('denyList', state.denyList);
-                    vscode.window.showInformationMessage('Shield Deny-List Secured!');
+                    vscode.window.showInformationMessage('🛡️ Shield Deny-List Secured!');
                     return;
                 case 'resetCounter':
                     vscode.commands.executeCommand('txa-auto-accept.resetCounter');
@@ -179,7 +171,7 @@ function activate(context) {
         const config = vscode.workspace.getConfiguration('txa-auto-accept');
         const current = config.get('autoClick', true);
         config.update('autoClick', !current, vscode.ConfigurationTarget.Global).then(() => {
-            const statusMsg = !current ? 'TXA Engine Activated! 🚀' : 'TXA Engine Paused! ⏸️';
+            const statusMsg = !current ? '🚀 TXA Engine Activated!' : '⏸️ TXA Engine Paused!';
             vscode.window.showInformationMessage(statusMsg);
             updateStatusBar();
         });
@@ -194,14 +186,14 @@ function activate(context) {
         context.globalState.update('denied', 0);
         context.globalState.update('log', []);
         updateStatusBar();
-        vscode.window.showInformationMessage('Counter and Logs have been reset.');
+        vscode.window.showInformationMessage('🔄 Counter and Logs have been reset.');
     }));
 
-    // Watch config changes and Live Restart Engine
+    // Watch config changes
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('txa-auto-accept')) {
             updateStatusBar();
-            startEngine(); // Restart interval with new config dynamically
+            startEngine();
 
             if (activePanel) {
                 const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
@@ -214,10 +206,9 @@ function activate(context) {
 }
 
 function deactivate() {
-    // Clean up
     const config = vscode.workspace.getConfiguration('txa-auto-accept');
     const autoClick = config.get('autoClick', true);
-    if (!autoClick) return; // Do nothing if already paused
+    if (!autoClick) return;
 }
 
 module.exports = { activate, deactivate };

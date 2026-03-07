@@ -47,8 +47,23 @@ module.exports = {
         { label: 'git reset hard', pattern: '/\\bgit\\s+reset\\s+--hard\\b/i' },
         { label: 'git clean -f', pattern: '/\\bgit\\s+clean\\s+-[a-z]*f/i' },
     ],
-    LOGO_SVG: `<svg width="42" height="42" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M64 8L16 28V60C16 88.4 36.4 114.8 64 120C91.6 114.8 112 88.4 112 60V28L64 8Z" fill="#38BDF8" fill-opacity="0.2" stroke="#38BDF8" stroke-width="4"/>
-        <path d="M64 40L48 68H60L56 88L80 56H64L68 40H64Z" fill="#38BDF8" stroke="#38BDF8" stroke-width="2" stroke-linejoin="round"/>
+    LOGO_SVG: `<svg width="44" height="44" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="shieldGrad" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#60a5fa"/>
+                <stop offset="50%" stop-color="#a78bfa"/>
+                <stop offset="100%" stop-color="#f472b6"/>
+            </linearGradient>
+            <linearGradient id="boltGrad" x1="48" y1="36" x2="80" y2="92" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#f97316"/>
+            </linearGradient>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <path d="M64 8L16 28V60C16 88.4 36.4 114.8 64 120C91.6 114.8 112 88.4 112 60V28L64 8Z" fill="url(#shieldGrad)" fill-opacity="0.15" stroke="url(#shieldGrad)" stroke-width="3.5" filter="url(#glow)"/>
+        <path d="M64 36L46 68H58L54 92L82 56H66L72 36H64Z" fill="url(#boltGrad)" stroke="url(#boltGrad)" stroke-width="1.5" stroke-linejoin="round" filter="url(#glow)"/>
     </svg>`
 };

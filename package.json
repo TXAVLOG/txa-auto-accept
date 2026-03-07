@@ -1,29 +1,55 @@
 {
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
-    "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
-    "version": "3.2.5",
+    "description": "Auto Accept Engine with Liquid Glass 2026 Dashboard, Aurora Particles, Threat Meter & Shield Deny-List.",
+    "version": "4.0.0",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/TXAVLOG/txa-auto-accept"
     },
     "homepage": "https://txavlog.github.io/txa-auto-accept/",
+    "bugs": {
+        "url": "https://github.com/TXAVLOG/txa-auto-accept/issues"
+    },
+    "galleryBanner": {
+        "color": "#06080f",
+        "theme": "dark"
+    },
+    "badges": [
+        {
+            "url": "https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=6366f1&label=Open%20VSX",
+            "href": "https://open-vsx.org/extension/txa-team/txa-auto-accept",
+            "description": "Open VSX Version"
+        },
+        {
+            "url": "https://img.shields.io/github/license/TXAVLOG/txa-auto-accept?color=22d3ee",
+            "href": "https://github.com/TXAVLOG/txa-auto-accept/blob/main/LICENSE",
+            "description": "License"
+        }
+    ],
     "engines": {
         "vscode": "^1.80.0"
     },
     "categories": [
         "Other",
-        "Keymaps"
+        "Keymaps",
+        "Formatters"
     ],
     "keywords": [
-        "phím tắt",
-        "shortcuts",
         "auto accept",
+        "auto click",
+        "security",
+        "shield",
+        "deny list",
         "glassmorphism",
-        "security shield"
+        "liquid glass",
+        "dashboard",
+        "terminal protection",
+        "aurora ui"
     ],
     "activationEvents": [
         "onStartupFinished"
@@ -105,7 +131,7 @@
         }
     },
     "scripts": {
-        "build": "node -e \"process.env.NODE_NO_WARNINGS=1\" && npx -y vsce package",
+        "build": "npx -y @vscode/vsce package --no-dependencies",
         "release:ovsx": "npx -y ovsx publish"
     },
     "devDependencies": {
