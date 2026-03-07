@@ -2,7 +2,7 @@
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
     "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
-    "version": "3.2.4",
+    "version": "3.2.5",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
@@ -10,6 +10,7 @@
         "type": "git",
         "url": "https://github.com/TXAVLOG/txa-auto-accept"
     },
+    "homepage": "https://txavlog.github.io/txa-auto-accept/",
     "engines": {
         "vscode": "^1.80.0"
     },
@@ -102,6 +103,10 @@
                 }
             }
         }
+    },
+    "scripts": {
+        "build": "node -e \"process.env.NODE_NO_WARNINGS=1\" && vsce package",
+        "release:ovsx": "ovsx publish"
     },
     "devDependencies": {
         "@types/vscode": "^1.80.0",

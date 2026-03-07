@@ -1,6 +1,6 @@
 # 🛡️ TXA Auto Accept - Premium Edition
 
-[![Version](https://img.shields.io/badge/version-3.2.4-blue.svg)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-3.2.5-blue.svg)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept.svg)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
