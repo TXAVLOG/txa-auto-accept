@@ -1,0 +1,79 @@
+{
+    "name": "txa-auto-accept",
+    "displayName": "TXA Auto Accept",
+    "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
+    "version": "3.2.1",
+    "icon": "icon.png",
+    "publisher": "TXA",
+    "author": "TXA",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TXAVLOG/txa-auto-accept"
+    },
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "txa-auto-accept.openDashboard",
+                "title": "TXA: Open Dashboard"
+            }
+        ],
+        "configuration": {
+            "title": "TXA Auto Accept",
+            "properties": {
+                "txa-auto-accept.language": {
+                    "type": "string",
+                    "enum": [
+                        "vi",
+                        "en"
+                    ],
+                    "default": "vi",
+                    "description": "Language for UI."
+                },
+                "txa-auto-accept.scanInterval": {
+                    "type": "integer",
+                    "default": 3000,
+                    "description": "Scan interval in milliseconds."
+                },
+                "txa-auto-accept.autoClick": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable auto-clicking."
+                },
+                "txa-auto-accept.idleSeconds": {
+                    "type": "integer",
+                    "default": 5,
+                    "description": "Seconds to wait after typing before resuming."
+                },
+                "txa-auto-accept.hotkey": {
+                    "type": "string",
+                    "default": "a",
+                    "description": "Hotkey to toggle pause (Alt+Key)."
+                },
+                "txa-auto-accept.scrollIntoView": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Scroll into view before clicking."
+                },
+                "txa-auto-accept.customSelector": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Custom CSS selector for buttons."
+                }
+            }
+        }
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.80.0",
+        "eslint": "^8.41.0"
+    }
+}
