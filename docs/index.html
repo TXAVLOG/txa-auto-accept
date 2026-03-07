@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXA Auto Accept - Premium Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020617;
+            --primary: #38bdf8;
+            --accent: #a855f7;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.1), transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1), transparent 40%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .logo-box {
+            width: 120px;
+            height: 120px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .logo-box img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .hero-text h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .publisher {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-verified {
+            background: var(--primary);
+            color: var(--bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        .main-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #fff; }
+        p { line-height: 1.8; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        .btn-install {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-install:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.4);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 20px;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+        }
+
+        footer {
+            margin-top: 6rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding-bottom: 4rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 800px) {
+            .grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-box">
+                <img src="https://raw.githubusercontent.com/TXAVLOG/txa-auto-accept/main/icon.png" alt="Logo">
+            </div>
+            <div class="hero-text">
+                <h1>TXA Auto Accept</h1>
+                <div class="publisher">
+                    TXA TEAM <span class="badge-verified">Verified by Antigravity</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="main-card">
+                <h2>Về Extension này</h2>
+                <p>
+                    TXA Auto Accept là công cụ tối ưu cho lập trình viên muốn tự động hóa các thao tác nhàm chán trong VS Code. Với giao diện <b>Liquid Glass Morphism</b> hiện đại, bạn có thể giám sát và kiểm soát mọi hành động tự động một cách an toàn.
+                </p>
+                <p>
+                    Hệ thống <b>Shield</b> tích hợp giúp ngăn chặn các lệnh thực thi nguy hiểm, bảo vệ mã nguồn và hệ thống của bạn khỏi những sai sót đáng tiếc.
+                </p>
+                
+                <a href="https://github.com/TXAVLOG/txa-auto-accept/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix" class="btn-install">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3"/></svg>
+                    Download VSIX (v3.2.2)
+                </a>
+                
+                <p style="margin-top: 2rem; font-size: 0.9rem;">
+                    * Sau khi tải về, mở VS Code -> Extensions -> Bấm <kbd>...</kbd> -> <b>Install from VSIX...</b>
+                </p>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-item">
+                    <div class="info-label">Phiên bản</div>
+                    <div class="info-value">3.2.2 (Premium)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nhà phát triển</div>
+                    <div class="info-value">TXAVLOG</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Giấy phép</div>
+                    <div class="info-value">MIT License</div>
+                </div>
+                <div class="info-item" style="border-color: var(--primary);">
+                    <div class="info-label">Antigravity Status</div>
+                    <div class="info-value" style="color: var(--primary);">💎 Premium Agent Approved</div>
+                </div>
+                <div class="tag-list">
+                    <span class="tag">Automation</span>
+                    <span class="tag">AI Engine</span>
+                    <span class="tag">Glassmorphism</span>
+                    <span class="tag">Security</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 TXA TEAM. Built with ❤️ and Antigravity AI.
+        </footer>
+    </div>
+</body>
+</html>
