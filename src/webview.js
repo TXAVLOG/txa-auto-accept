@@ -664,7 +664,7 @@ function getWebviewContent(config, state, suggestions) {
                 <div class="logo-wrapper">${LOGO_SVG}</div>
                 <div class="brand-text">
                     <h1>${t.title}</h1>
-                    <span>v${config.get('version', '3.2.1')} AI Engine</span>
+                    <span>v${config.get('version', '3.2.2')} AI Engine</span>
                 </div>
             </div>
             <div class="tabs">

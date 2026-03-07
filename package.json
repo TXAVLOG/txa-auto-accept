@@ -2,7 +2,7 @@
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
     "description": "Auto Accept Engine with Liquid Glass Morphism Dashboard and Shield Deny-List.",
-    "version": "3.2.1",
+    "version": "3.2.2",
     "icon": "icon.png",
     "publisher": "TXA",
     "author": "TXA",
