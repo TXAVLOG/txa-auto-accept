@@ -105,8 +105,8 @@
         }
     },
     "scripts": {
-        "build": "node -e \"process.env.NODE_NO_WARNINGS=1\" && vsce package",
-        "release:ovsx": "ovsx publish"
+        "build": "node -e \"process.env.NODE_NO_WARNINGS=1\" && npx -y vsce package",
+        "release:ovsx": "npx -y ovsx publish"
     },
     "devDependencies": {
         "@types/vscode": "^1.80.0",
