@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TXA Auto Accept - Premium Marketplace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg: #020617;
@@ -16,14 +19,18 @@
             --text-muted: #94a3b8;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
             overflow-x: hidden;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.1), transparent 40%),
                 radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1), transparent 40%);
             min-height: 100vh;
@@ -53,7 +60,7 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .logo-box img {
@@ -104,8 +111,17 @@
             backdrop-filter: blur(20px);
         }
 
-        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #fff; }
-        p { line-height: 1.8; color: var(--text-muted); margin-bottom: 1.5rem; }
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        p {
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
 
         .btn-install {
             display: inline-flex;
@@ -135,7 +151,7 @@
         }
 
         .info-item {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             padding: 1.5rem;
             border-radius: 20px;
@@ -163,7 +179,7 @@
         }
 
         .tag {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             padding: 4px 12px;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -179,16 +195,30 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 800px) {
-            .grid { grid-template-columns: 1fr; }
-            header { flex-direction: column; text-align: center; }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -207,17 +237,24 @@
             <div class="main-card">
                 <h2>Về Extension này</h2>
                 <p>
-                    TXA Auto Accept là công cụ tối ưu cho lập trình viên muốn tự động hóa các thao tác nhàm chán trong VS Code. Với giao diện <b>Liquid Glass Morphism</b> hiện đại, bạn có thể giám sát và kiểm soát mọi hành động tự động một cách an toàn.
+                    TXA Auto Accept là công cụ tối ưu cho lập trình viên muốn tự động hóa các thao tác nhàm chán trong
+                    VS Code. Với giao diện <b>Liquid Glass Morphism</b> hiện đại, bạn có thể giám sát và kiểm soát mọi
+                    hành động tự động một cách an toàn.
                 </p>
                 <p>
-                    Hệ thống <b>Shield</b> tích hợp giúp ngăn chặn các lệnh thực thi nguy hiểm, bảo vệ mã nguồn và hệ thống của bạn khỏi những sai sót đáng tiếc.
+                    Hệ thống <b>Shield</b> tích hợp giúp ngăn chặn các lệnh thực thi nguy hiểm, bảo vệ mã nguồn và hệ
+                    thống của bạn khỏi những sai sót đáng tiếc.
                 </p>
-                
-                <a href="https://github.com/TXAVLOG/txa-auto-accept/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix" class="btn-install">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3"/></svg>
-                    Download VSIX (v3.2.2)
+
+                <a href="javascript:void(0)" class="btn-install" id="btn-download" style="cursor: pointer;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path
+                            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    Đang kiểm tra phiên bản...
                 </a>
-                
+
                 <p style="margin-top: 2rem; font-size: 0.9rem;">
                     * Sau khi tải về, mở VS Code -> Extensions -> Bấm <kbd>...</kbd> -> <b>Install from VSIX...</b>
                 </p>
@@ -226,7 +263,7 @@
             <div class="sidebar">
                 <div class="info-item">
                     <div class="info-label">Phiên bản</div>
-                    <div class="info-value">3.2.2 (Premium)</div>
+                    <div class="info-value" id="info-version">---</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Nhà phát triển</div>
@@ -253,5 +290,39 @@
             &copy; 2026 TXA TEAM. Built with ❤️ and Antigravity AI.
         </footer>
     </div>
+
+    <script>
+        async function initMarketplace() {
+            const btn = document.getElementById('btn-download');
+            const versionEl = document.getElementById('info-version');
+            const repo = 'TXAVLOG/txa-auto-accept';
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
+                const data = await response.json();
+
+                if (data && data.assets) {
+                    const asset = data.assets.find(a => a.name.endsWith('.vsix'));
+                    if (asset) {
+                        const tag = data.tag_name;
+                        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3"/></svg> Download VSIX (${tag})`;
+                        versionEl.innerText = `${tag} (Latest)`;
+
+                        btn.onclick = () => {
+                            window.location.href = asset.browser_download_url;
+                        };
+                    }
+                }
+            } catch (err) {
+                console.error('Marketplace sync error:', err);
+                btn.innerText = 'Tải bản v3.2.2 (Offline)';
+                btn.onclick = () => {
+                    window.location.href = `https://github.com/${repo}/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix`;
+                };
+            }
+        }
+        initMarketplace();
+    </script>
 </body>
+
 </html>
