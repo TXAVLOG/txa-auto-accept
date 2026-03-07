@@ -4,6 +4,10 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [4.0.4] - 2026-03-07
+### Added
+- Thiết kế lại mục Tính năng trong README sang phong cách hiện đại, bền vững hơn.
+
 ## [4.0.3] - 2026-03-07
 ### Added
 - Bổ sung tệp `CHANGELOG.md` để hiển thị lịch sử cập nhật trên Open VSX.

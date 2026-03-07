@@ -1,7 +1,7 @@
 module.exports = {
     vi: {
         title: "TXA AUTO ACCEPT",
-        version: "v4.0.3",
+        version: "v4.0.4",
         monitor: "GIÁM SÁT",
         config: "CẤU HÌNH",
         shield: "LÁ CHẮN",
@@ -59,7 +59,7 @@ module.exports = {
     },
     en: {
         title: "TXA AUTO ACCEPT",
-        version: "v4.0.3",
+        version: "v4.0.4",
         monitor: "MONITOR",
         config: "CONFIG",
         shield: "SHIELD",
@@ -94,7 +94,7 @@ module.exports = {
         scrollDesc: "Auto-scroll to target before clicking",
         customSelector: "Target Lock (CSS)",
         customSelectorDesc: "Specify selector (e.g. button.primary)",
-        startupMsg: "🚀 TXA AUTO ACCEPT v4.0 — Liquid Glass Engine is ready!",
+        startupMsg: "🚀 TXA AUTO ACCEPT v4.0.4 — Liquid Glass Engine is ready!",
         configSaved: "✅ Configuration saved successfully!",
         shieldUpdated: "🛡️ Protection Shield updated!",
         clearLogConfirm: "🗑️ System logs cleared!",
