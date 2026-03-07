@@ -353,20 +353,65 @@
             border-color: var(--primary) !important;
         }
 
+        /* --- Simulated Status Bar --- */
+        .vs-status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 26px;
+            background: #007acc;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .vs-status-bar.visible {
+            opacity: 1;
+        }
+
+        .status-left,
+        .status-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
         footer {
             padding: 4rem 10%;
             text-align: center;
             border-top: 1px solid var(--border);
             color: var(--text-muted);
+            margin-bottom: 2rem;
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            .store-grid {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .grid {
                 grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
             }
         }
     </style>
@@ -374,6 +419,16 @@
 
 <body>
     <div class="tx-toast-container" id="toast-container"></div>
+
+    <div class="vs-status-bar" id="vs-status-bar">
+        <div class="status-left">
+            <span>&#9001;/&#9002; TXA-Project</span>
+            <span>&bull; main*</span>
+        </div>
+        <div class="status-right" id="status-clock-demo">
+            🎯 TXA: Ready | T6, 01:26:08 07/03/2026
+        </div>
+    </div>
     <nav>
         <div class="nav-brand">TXA TEAM STORE</div>
         <div class="nav-links">
@@ -403,6 +458,8 @@
                 <div class="card-title">
                     <h3>TXA Auto Accept</h3>
                     <span class="card-tag">Premium</span>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;" id="val-version-aa">
+                        v3.2.3 (Current)</div>
                 </div>
             </div>
             <p class="desc">Tự động bấm nút Accept/Submit thông minh, đi kèm hệ thống Shield chặn lệnh nguy hiểm và
@@ -434,13 +491,14 @@
             <p class="desc">Đưa đồng hồ thời gian thực lên thanh Status Bar với khả năng tùy biến format cực mạnh (giờ,
                 phút, giây, thứ, ngày tháng).</p>
             <div class="card-actions">
-                <a href="javascript:void(0)" class="btn-buy btn-demo" onclick="showDemoToast()">
+                <a href="javascript:void(0)" class="btn-buy btn-demo" onclick="toggleClockDemo()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
                     </svg>
                     Live Demo
                 </a>
-                <a href="https://github.com/TXAVLOG/txa-status-clock/releases/latest" target="_blank" class="btn-buy">
+                <a href="javascript:void(0)" class="btn-buy"
+                    onclick="showToast('Sản phẩm TX Status Clock chưa công khai (v1.0.0)')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <path
@@ -495,18 +553,32 @@
             }, 3000);
         }
 
-        function showDemoToast() {
-            showToast('TX Status Clock: Engine đang chạy ngầm...');
-            setTimeout(() => {
-                const now = new Date();
-                const time = now.toLocaleTimeString('vi-VN');
-                showToast(`[Demo] Thời gian thực: ${time}`);
-            }, 800);
+        let clockTimer = null;
+        function toggleClockDemo() {
+            const bar = document.getElementById('vs-status-bar');
+            const demoText = document.getElementById('status-clock-demo');
+
+            if (clockTimer) {
+                clearInterval(clockTimer);
+                clockTimer = null;
+                bar.classList.remove('visible');
+                showToast('Đã đóng Demo Status Bar.');
+            } else {
+                bar.classList.add('visible');
+                showToast('Đã kích hoạt Demo Status Bar bên dưới! ⌚');
+                clockTimer = setInterval(() => {
+                    const now = new Date();
+                    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                    const time = now.toLocaleTimeString('vi-VN', { hour12: false });
+                    const date = now.toLocaleDateString('vi-VN');
+                    demoText.innerText = `🎯 TXA: Ready | ${days[now.getDay()]}, ${time} ${date}`;
+                }, 1000);
+            }
         }
 
         async function syncStore() {
             const btn = document.getElementById('btn-auto-accept');
-            const label = document.getElementById('label-auto-accept');
+            const versionLabel = document.getElementById('val-version-aa');
             const repo = 'TXAVLOG/txa-auto-accept';
 
             try {
@@ -516,18 +588,19 @@
                 if (data && data.assets) {
                     const asset = data.assets.find(a => a.name.endsWith('.vsix'));
                     if (asset) {
-                        label.innerText = `Download VSIX (${data.tag_name})`;
+                        const tag = data.tag_name;
+                        versionLabel.innerText = `${tag} (Latest)`;
+                        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM7 10l5 5 5-5M12 15V3"/></svg> Download VSIX (${tag})`;
+
                         btn.onclick = () => {
                             window.location.href = asset.browser_download_url;
                         };
                     }
                 }
             } catch (err) {
-                label.innerText = 'Download VSIX (v3.2.2)';
-                console.log(err);
-                console.warn("Failed to sync store, using fallback URL");
+                console.error('Marketplace sync error:', err);
                 btn.onclick = () => {
-                    window.location.href = `https://github.com/${repo}/releases/download/v3.2.2/txa-auto-accept-3.2.2.vsix`;
+                    window.location.href = `https://github.com/${repo}/releases/download/v3.2.3/txa-auto-accept-3.2.3.vsix`;
                 };
             }
         }
