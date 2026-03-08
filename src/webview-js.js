@@ -252,22 +252,25 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
 
         // === ELEMENT PICKER ===
         let isPickingMode = false;
+        // Tạo overlay với pointer-events: none để ko chặn click
         const pickerOverlay = document.createElement('div');
-        pickerOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;border:2px dashed var(--primary);background:rgba(99,102,241,0.03);display:none';
+        pickerOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;border:4px dashed var(--primary);background:rgba(99,102,241,0.03);display:none';
         document.body.appendChild(pickerOverlay);
+
         const pickerBadge = document.createElement('div');
-        pickerBadge.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:10px 24px;border-radius:20px;font-weight:700;font-size:13px;z-index:10000;box-shadow:0 10px 30px rgba(99,102,241,0.4);display:none';
+        pickerBadge.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:10px 24px;border-radius:20px;font-weight:700;font-size:13px;z-index:10000;box-shadow:0 10px 30px rgba(99,102,241,0.4);display:none;pointer-events:auto';
         pickerBadge.innerHTML = '🎯 Pick mode (ESC to exit)';
         document.body.appendChild(pickerBadge);
+
         const pickerHoverBox = document.createElement('div');
         pickerHoverBox.style.cssText = 'position:fixed;pointer-events:none;border:2px solid var(--accent);background:rgba(167,139,250,0.15);z-index:9998;transition:all .1s;display:none;border-radius:4px';
         document.body.appendChild(pickerHoverBox);
-        const pickerTooltip = document.createElement('div');
-        pickerTooltip.style.cssText = 'position:fixed;pointer-events:none;background:rgba(10,15,30,0.95);color:var(--text-main);font-family:monospace;font-size:11px;padding:4px 8px;border-radius:6px;z-index:10001;border:1px solid var(--glass-border);display:none';
-        document.body.appendChild(pickerTooltip);
+        
+        const pickerTooltip = document.getElementById('txa-tooltip'); // Reuse main tooltip
 
-        document.getElementById('btn-pick-element').onclick = () => {
-            alert("⚠️ Pick Mode activated inside Dashboard frame.\nTo pick elements outside in the IDE, please use VS Code DevTools (Ctrl+Shift+I).");
+        document.getElementById('btn-pick-element').onclick = (e) => {
+            e.preventDefault();
+            alert("⚠️ Pick Mode activated inside Dashboard frame.\\nTo pick elements outside in the IDE, please use VS Code DevTools (Ctrl+Shift+I).");
             isPickingMode = true;
             pickerOverlay.style.display = 'block';
             pickerBadge.style.display = 'block';
@@ -277,47 +280,63 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
         function getCssSelector(el) {
             if (el.id) return '#' + el.id;
             if (el.className && typeof el.className === 'string') {
-                const parts = el.className.split(' ').filter(c => c.trim() && !c.includes('active') && !c.includes('hover'));
+                const parts = el.className.split(' ').filter(c => c.trim() && !c.includes('active') && !c.includes('hover') && !c.includes('changed'));
                 if (parts.length > 0) return '.' + parts.join('.');
             }
             return el.tagName.toLowerCase();
         }
 
+        // Thoát Pick Mode
+        function exitPickerMode() {
+            isPickingMode = false;
+            pickerOverlay.style.display = 'none';
+            pickerBadge.style.display = 'none';
+            pickerHoverBox.style.display = 'none';
+            document.body.style.cursor = 'default';
+        }
+
         document.addEventListener('mousemove', e => {
             if (!isPickingMode) return;
             const target = e.target;
-            if (target === document.body || target === document.documentElement || target === pickerBadge) {
-                pickerHoverBox.style.display = 'none'; pickerTooltip.style.display = 'none'; return;
+            if (target === document.body || target === document.documentElement || target === pickerBadge || target.closest('.nav-tabs')) {
+                pickerHoverBox.style.display = 'none'; return;
             }
             const rect = target.getBoundingClientRect();
             pickerHoverBox.style.display = 'block';
-            pickerHoverBox.style.top = rect.top + 'px'; pickerHoverBox.style.left = rect.left + 'px';
-            pickerHoverBox.style.width = rect.width + 'px'; pickerHoverBox.style.height = rect.height + 'px';
-            pickerTooltip.style.display = 'block';
-            pickerTooltip.innerText = getCssSelector(target);
-            pickerTooltip.style.top = (e.clientY + 20) + 'px'; pickerTooltip.style.left = (e.clientX + 20) + 'px';
+            pickerHoverBox.style.top = rect.top + 'px'; 
+            pickerHoverBox.style.left = rect.left + 'px';
+            pickerHoverBox.style.width = rect.width + 'px'; 
+            pickerHoverBox.style.height = rect.height + 'px';
         });
 
         document.addEventListener('click', e => {
             if (!isPickingMode) return;
-            e.preventDefault(); e.stopPropagation();
+            
+            // Ko bắt click nếu bấm vào chính cái badge hoặc các tab điều hướng
+            if (e.target === pickerBadge || e.target.closest('.nav-tabs')) {
+                if (e.target.closest('.nav-tabs')) exitPickerMode();
+                return;
+            }
+
+            e.preventDefault(); 
+            e.stopPropagation();
+            
             const target = e.target;
-            if (target === document.body || target === document.documentElement || target === pickerBadge) return;
-            document.getElementById('cfg-selector').value = getCssSelector(target);
-            exitPickerMode();
+            const selector = getCssSelector(target);
             const inp = document.getElementById('cfg-selector');
-            inp.style.borderColor = 'var(--success)';
-            setTimeout(() => inp.style.borderColor = '', 1000);
+            if (inp) {
+                inp.value = selector;
+                inp.style.borderColor = 'var(--success)';
+                setTimeout(() => inp.style.borderColor = '', 1000);
+            }
+            
+            exitPickerMode();
             document.querySelector('[data-tab="config"]').click();
         }, true);
 
-        document.addEventListener('keydown', e => { if (isPickingMode && e.key === 'Escape') exitPickerMode(); });
-        function exitPickerMode() {
-            isPickingMode = false;
-            pickerOverlay.style.display = 'none'; pickerBadge.style.display = 'none';
-            pickerHoverBox.style.display = 'none'; pickerTooltip.style.display = 'none';
-            document.body.style.cursor = 'default';
-        }
+        document.addEventListener('keydown', e => { 
+            if (isPickingMode && e.key === 'Escape') exitPickerMode(); 
+        });
 
         // === AUTO SUGGEST ===
         const labelInp = document.getElementById('new-label');
