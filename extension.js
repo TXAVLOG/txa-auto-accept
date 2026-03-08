@@ -14,7 +14,7 @@ function activate(context) {
     const lang = config.get('language', 'vi');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v4.0.7';
+    const VERSION = 'v4.0.8';
     // Startup notification
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
@@ -49,7 +49,7 @@ function activate(context) {
 
         statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗`;
         statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.7');
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.8');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW
@@ -136,27 +136,36 @@ function activate(context) {
         if (!autoClick) return;
 
         // Monitor terminals for prompts
-        context.subscriptions.push(vscode.window.onDidWriteTerminalData(e => {
-            const config = vscode.workspace.getConfiguration('txa-auto-accept');
-            if (!config.get('autoClick', true)) return;
+        // Note: onDidWriteTerminalData is a proposed API that may not exist in all VS Code versions.
+        // We safely check for its existence to prevent activation failures.
+        try {
+            if (typeof vscode.window.onDidWriteTerminalData === 'function') {
+                context.subscriptions.push(vscode.window.onDidWriteTerminalData(e => {
+                    const config = vscode.workspace.getConfiguration('txa-auto-accept');
+                    if (!config.get('autoClick', true)) return;
 
-            const data = e.data;
-            // Detect common confirmation prompts: [y/N], (y/n), etc.
-            if (/\[[Yy]\/[Nn]\]|\([Yy]\/[Nn]\)|\? \(Y\/n\)/.test(data)) {
-                // Check if the previous text in terminal was dangerous (simple buffer check)
-                // For now, let's just do a smart auto-accept for benign ones
-                setTimeout(() => {
-                    e.terminal.sendText('y');
-                    handleAction('acc', `Auto-Accepted Prompt in ${e.terminal.name}`);
-                }, 500);
-            }
+                    const data = e.data;
+                    // Detect common confirmation prompts: [y/N], (y/n), etc.
+                    if (/\[[Yy]\/[Nn]\]|\([Yy]\/[Nn]\)|\? \(Y\/n\)/.test(data)) {
+                        setTimeout(() => {
+                            e.terminal.sendText('y');
+                            handleAction('acc', `Auto-Accepted Prompt in ${e.terminal.name}`);
+                        }, 500);
+                    }
 
-            // Shield Check: If dangerous pattern appears in terminal output (like a cat command showing sensitive info)
-            if (checkDenyList(data)) {
-                handleAction('den', `Blocked/Detected Threat in Terminal: ${e.terminal.name}`);
-                vscode.window.showWarningMessage(`🛡️ TXA Shield: Detected threat in ${e.terminal.name}! Check your dashboard.`);
+                    // Shield Check: If dangerous pattern appears in terminal output
+                    if (checkDenyList(data)) {
+                        handleAction('den', `Blocked/Detected Threat in Terminal: ${e.terminal.name}`);
+                        vscode.window.showWarningMessage(`🛡️ TXA Shield: Detected threat in ${e.terminal.name}! Check your dashboard.`);
+                    }
+                }));
+            } else {
+                // Fallback: API not available, terminal monitoring will be limited
+                console.log('[TXA] onDidWriteTerminalData not available, terminal monitoring disabled.');
             }
-        }));
+        } catch (err) {
+            console.warn('[TXA] Could not attach terminal monitor:', err.message);
+        }
     }
 
     startEngine();

@@ -4,6 +4,11 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [4.0.8] - 2026-03-08
+### Fixed
+- Sửa lỗi nghiêm trọng: Toàn bộ shortcut và command không hoạt động do `onDidWriteTerminalData` (Proposed API) đã bị xóa khỏi VS Code mới.
+- Extension giờ sẽ kiểm tra API tồn tại trước khi sử dụng, đảm bảo activate thành công trên mọi phiên bản.
+
 ## [4.0.7] - 2026-03-07
 - Sửa lỗi các nút bấm trên Dashboard không nhận thao tác click do lớp overlay của Pick Mode chặn sự kiện.
 
