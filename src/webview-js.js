@@ -158,7 +158,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
                 const dot = document.querySelector('.status-dot');
                 if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--error)';
                 const stext = document.getElementById('status-text');
-                if (stext) stext.textContent = (isEngineActive ? (msg.autoClick ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') : 'Engine Paused • System at rest') + ' v5.0.0';
+                if (stext) stext.textContent = (isEngineActive ? (msg.autoClick ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') : 'Engine Paused • System at rest') + ' v6.0.0';
             } else if (msg.command === 'updateUptime') {
                 uptimeSeconds = msg.uptime;
                 updateUptimeDisplay();

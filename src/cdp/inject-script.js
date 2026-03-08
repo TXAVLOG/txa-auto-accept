@@ -189,73 +189,183 @@
     }
 
     // ── PICKER SYSTEM (GLOBAL) ───────────────────────────────────────────────
+    // Inject vào IDE window qua CDP → có thể pick bất kỳ element nào trong IDE
+    // Countdown overlay giúp user có thời gian chuyển focus từ Dashboard sang IDE
+
     let isPickMode = false;
-    let hoverBox, pickerBadge;
+    let hoverBox, pickerBadge, countdownEl, countdownTimer;
 
-    function initPickerUI() {
+    function ensurePickerUI() {
         if (hoverBox) return;
-        hoverBox = document.createElement('div');
-        hoverBox.style.cssText = 'position:fixed;pointer-events:none;border:2px solid #6366f1;background:rgba(99,102,241,0.1);z-index:2147483647;display:none;border-radius:3px;transition:all 0.05s';
 
+        // Highlight box theo dõi hover
+        hoverBox = document.createElement('div');
+        hoverBox.style.cssText = [
+            'position:fixed;pointer-events:none;z-index:2147483647;display:none;',
+            'border:2px solid #6366f1;background:rgba(99,102,241,0.08);',
+            'border-radius:4px;transition:top 0.05s,left 0.05s,width 0.05s,height 0.05s;',
+            'box-shadow:0 0 0 4000px rgba(0,0,0,0.25);', // dim everything outside
+        ].join('');
+
+        // Badge hướng dẫn ở top
         pickerBadge = document.createElement('div');
-        pickerBadge.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#6366f1,#a78bfa);color:white;padding:6px 16px;border-radius:20px;font-family:sans-serif;font-size:12px;font-weight:bold;z-index:2147483647;box-shadow:0 4px 15px rgba(0,0,0,0.3);display:none';
-        pickerBadge.innerText = '🎯 TXA Pick Mode (ESC to cancel)';
+        pickerBadge.style.cssText = [
+            'position:fixed;top:12px;left:50%;transform:translateX(-50%);',
+            'background:linear-gradient(135deg,#6366f1,#a78bfa);color:white;',
+            'padding:8px 20px;border-radius:24px;font-family:ui-sans-serif,sans-serif;',
+            'font-size:13px;font-weight:700;z-index:2147483648;',
+            'box-shadow:0 4px 20px rgba(99,102,241,0.5);display:none;',
+            'letter-spacing:0.3px;white-space:nowrap;',
+        ].join('');
+
+        // Label hiển thị tag đang hover (góc dưới trái highlight box)
+        const tagLabel = document.createElement('div');
+        tagLabel.id = '__txa_tag_label';
+        tagLabel.style.cssText = [
+            'position:fixed;z-index:2147483648;display:none;',
+            'background:#6366f1;color:white;font-family:ui-monospace,monospace;',
+            'font-size:10px;padding:2px 8px;border-radius:0 4px 0 0;pointer-events:none;',
+        ].join('');
+
+        // Countdown overlay (hiện 3s trước khi pick mode active)
+        countdownEl = document.createElement('div');
+        countdownEl.style.cssText = [
+            'position:fixed;inset:0;z-index:2147483647;display:none;',
+            'background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);',
+            'align-items:center;justify-content:center;flex-direction:column;',
+            'font-family:ui-sans-serif,sans-serif;color:white;',
+        ].join('');
+        countdownEl.innerHTML = `
+            <div style="font-size:72px;font-weight:900;line-height:1;text-shadow:0 0 40px rgba(99,102,241,0.8)" id="__txa_cd_num">3</div>
+            <div style="font-size:16px;margin-top:12px;opacity:0.8">Move mouse to IDE area to pick element</div>
+            <div style="font-size:12px;margin-top:6px;opacity:0.5">Press ESC to cancel</div>
+        `;
 
         document.body.appendChild(hoverBox);
         document.body.appendChild(pickerBadge);
+        document.body.appendChild(tagLabel);
+        document.body.appendChild(countdownEl);
     }
 
-    function getSelector(el) {
-        if (el.id) return '#' + el.id;
+    function getBestSelector(el) {
+        // Ưu tiên: id > data-testid > aria-label > class combo > tagName
+        if (el.id) return '#' + CSS.escape(el.id);
+        if (el.dataset.testid) return `[data-testid="${el.dataset.testid}"]`;
+        if (el.getAttribute('aria-label')) return `[aria-label="${el.getAttribute('aria-label')}"]`;
         if (el.className && typeof el.className === 'string') {
-            const cls = el.className.split(/\s+/).filter(c => c && !c.includes('hover') && !c.includes('active')).join('.');
+            const cls = el.className.trim().split(/\s+/)
+                .filter(c => c && !c.match(/^(hover|active|focus|selected|disabled|is-|js-)/))
+                .slice(0, 3).join('.');
             if (cls) return el.tagName.toLowerCase() + '.' + cls;
         }
-        return el.tagName.toLowerCase();
+        // Fallback: nth-child path (giống DevTools)
+        const path = [];
+        let cur = el;
+        while (cur && cur !== document.body && path.length < 5) {
+            let tag = cur.tagName.toLowerCase();
+            let idx = 1, sib = cur;
+            while ((sib = sib.previousElementSibling)) if (sib.tagName === cur.tagName) idx++;
+            path.unshift(idx > 1 ? `${tag}:nth-of-type(${idx})` : tag);
+            cur = cur.parentElement;
+        }
+        return path.join(' > ');
     }
 
-    const onMove = (e) => {
+    const onPickMove = (e) => {
         if (!isPickMode) return;
         const target = e.target;
-        if (!target || target === document.body || target === document.documentElement) return;
+        if (!target || target === document.body || target === document.documentElement ||
+            target === hoverBox || target === pickerBadge || target === countdownEl) return;
+
         const rect = target.getBoundingClientRect();
         hoverBox.style.display = 'block';
         hoverBox.style.top = rect.top + 'px';
         hoverBox.style.left = rect.left + 'px';
         hoverBox.style.width = rect.width + 'px';
         hoverBox.style.height = rect.height + 'px';
+
+        // Tag label
+        const tl = document.getElementById('__txa_tag_label');
+        if (tl) {
+            tl.style.display = 'block';
+            tl.style.top = (rect.bottom + 2) + 'px';
+            tl.style.left = rect.left + 'px';
+            const tagName = target.tagName.toLowerCase();
+            const cls = target.className && typeof target.className === 'string'
+                ? '.' + target.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+            tl.textContent = tagName + cls;
+        }
     };
 
-    const onClick = (e) => {
+    const onPickClick = (e) => {
         if (!isPickMode) return;
         e.preventDefault();
         e.stopPropagation();
-        window.__txaPickedSelector = getSelector(e.target);
+        window.__txaPickedSelector = getBestSelector(e.target);
         log(`Picked: ${window.__txaPickedSelector}`);
         window.__txaSetPickMode(false);
     };
 
-    const onKey = (e) => {
-        if (isPickMode && e.key === 'Escape') window.__txaSetPickMode(false);
+    const onPickKey = (e) => {
+        if (e.key === 'Escape') {
+            if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+            window.__txaSetPickMode(false);
+        }
     };
 
+    function startPickListeners() {
+        document.addEventListener('mousemove', onPickMove, true);
+        document.addEventListener('click', onPickClick, true);
+        document.addEventListener('keydown', onPickKey, true);
+    }
+
+    function stopPickListeners() {
+        document.removeEventListener('mousemove', onPickMove, true);
+        document.removeEventListener('click', onPickClick, true);
+        document.removeEventListener('keydown', onPickKey, true);
+    }
+
     window.__txaSetPickMode = function (val) {
-        isPickMode = val;
-        initPickerUI();
-        if (val) {
-            pickerBadge.style.display = 'block';
-            document.body.style.cursor = 'crosshair';
-            window.addEventListener('mousemove', onMove, true);
-            window.addEventListener('click', onClick, true);
-            window.addEventListener('keydown', onKey, true);
-        } else {
+        ensurePickerUI();
+
+        if (!val) {
+            // Tắt pick mode
+            isPickMode = false;
+            if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
             hoverBox.style.display = 'none';
             pickerBadge.style.display = 'none';
-            document.body.style.cursor = 'default';
-            window.removeEventListener('mousemove', onMove, true);
-            window.removeEventListener('click', onClick, true);
-            window.removeEventListener('keydown', onKey, true);
+            countdownEl.style.display = 'none';
+            const tl = document.getElementById('__txa_tag_label');
+            if (tl) tl.style.display = 'none';
+            document.body.style.cursor = '';
+            stopPickListeners();
+            return;
         }
+
+        // Bật pick mode với countdown 3s
+        // Countdown cho user thời gian chuyển focus từ Dashboard sang IDE window
+        countdownEl.style.display = 'flex';
+        document.addEventListener('keydown', onPickKey, true); // ESC trong countdown
+
+        let count = 3;
+        const cdNum = document.getElementById('__txa_cd_num');
+        if (cdNum) cdNum.textContent = count;
+
+        countdownTimer = setInterval(() => {
+            count--;
+            if (cdNum) cdNum.textContent = count;
+            if (count <= 0) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+                // Ẩn countdown, bật pick
+                countdownEl.style.display = 'none';
+                isPickMode = true;
+                pickerBadge.style.display = 'block';
+                pickerBadge.textContent = '🎯 TXA Pick Mode — Click element  ·  ESC to cancel';
+                document.body.style.cursor = 'crosshair';
+                startPickListeners();
+            }
+        }, 1000);
     };
 
     window.__txaGetPickedSelector = function () {

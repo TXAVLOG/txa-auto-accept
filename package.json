@@ -1,144 +1,144 @@
 {
-    "name": "txa-auto-accept",
-    "displayName": "TXA Auto Accept",
-    "description": "Auto Accept Engine with CDP DOM Click — tự động click Run/Accept trong IDE UI. Liquid Glass 2026 Dashboard.",
-    "version": "5.0.0",
-    "icon": "icon.png",
-    "publisher": "txa-team",
-    "author": "TXA Team",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/TXAVLOG/txa-auto-accept"
+  "name": "txa-auto-accept",
+  "displayName": "TXA Auto Accept",
+  "description": "Auto Accept Engine with CDP DOM Click \u2014 t\u1ef1 \u0111\u1ed9ng click Run/Accept trong IDE UI. Liquid Glass 2026 Dashboard.",
+  "version": "6.0.0",
+  "icon": "icon.png",
+  "publisher": "txa-team",
+  "author": "TXA Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TXAVLOG/txa-auto-accept"
+  },
+  "homepage": "https://txavlog.github.io/txa-auto-accept/",
+  "bugs": {
+    "url": "https://github.com/TXAVLOG/txa-auto-accept/issues"
+  },
+  "galleryBanner": {
+    "color": "#06080f",
+    "theme": "dark"
+  },
+  "badges": [
+    {
+      "url": "https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=6366f1&label=Open%20VSX",
+      "href": "https://open-vsx.org/extension/txa-team/txa-auto-accept",
+      "description": "Open VSX Version"
     },
-    "homepage": "https://txavlog.github.io/txa-auto-accept/",
-    "bugs": {
-        "url": "https://github.com/TXAVLOG/txa-auto-accept/issues"
-    },
-    "galleryBanner": {
-        "color": "#06080f",
-        "theme": "dark"
-    },
-    "badges": [
-        {
-            "url": "https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=6366f1&label=Open%20VSX",
-            "href": "https://open-vsx.org/extension/txa-team/txa-auto-accept",
-            "description": "Open VSX Version"
-        },
-        {
-            "url": "https://img.shields.io/github/license/TXAVLOG/txa-auto-accept?color=22d3ee",
-            "href": "https://github.com/TXAVLOG/txa-auto-accept/blob/main/LICENSE",
-            "description": "License"
-        }
-    ],
-    "engines": {
-        "vscode": "^1.80.0"
-    },
-    "categories": [
-        "Other",
-        "Keymaps",
-        "Formatters"
-    ],
-    "keywords": [
-        "auto accept",
-        "auto click",
-        "security",
-        "shield",
-        "deny list",
-        "glassmorphism",
-        "liquid glass",
-        "dashboard",
-        "terminal protection",
-        "aurora ui"
-    ],
-    "activationEvents": [
-        "onStartupFinished"
-    ],
-    "main": "./extension.js",
-    "contributes": {
-        "commands": [
-            {
-                "command": "txa-auto-accept.openDashboard",
-                "title": "TXA: Open Dashboard"
-            },
-            {
-                "command": "txa-auto-accept.toggleEngine",
-                "title": "TXA: Toggle Engine (Enable/Disable)"
-            },
-            {
-                "command": "txa-auto-accept.resetCounter",
-                "title": "TXA: Reset Counter & Logs"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "txa-auto-accept.openDashboard",
-                "key": "alt+shift+a",
-                "mac": "cmd+alt+a"
-            },
-            {
-                "command": "txa-auto-accept.toggleEngine",
-                "key": "alt+a"
-            },
-            {
-                "command": "txa-auto-accept.resetCounter",
-                "key": "alt+r"
-            }
-        ],
-        "configuration": {
-            "title": "TXA Auto Accept",
-            "properties": {
-                "txa-auto-accept.language": {
-                    "type": "string",
-                    "enum": [
-                        "vi",
-                        "en"
-                    ],
-                    "default": "en",
-                    "description": "Language for UI."
-                },
-                "txa-auto-accept.scanInterval": {
-                    "type": "integer",
-                    "default": 3000,
-                    "description": "Scan interval in milliseconds."
-                },
-                "txa-auto-accept.autoClick": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable auto-clicking."
-                },
-                "txa-auto-accept.idleSeconds": {
-                    "type": "integer",
-                    "default": 5,
-                    "description": "Seconds to wait after typing before resuming."
-                },
-                "txa-auto-accept.hotkey": {
-                    "type": "string",
-                    "default": "a",
-                    "description": "Hotkey to toggle pause (Alt+Key)."
-                },
-                "txa-auto-accept.scrollIntoView": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Scroll into view before clicking."
-                },
-                "txa-auto-accept.customSelector": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Custom CSS selector for buttons."
-                }
-            }
-        }
-    },
-    "scripts": {
-        "build": "npx -y @vscode/vsce package",
-        "release:ovsx": "npx -y ovsx publish"
-    },
-    "dependencies": {
-        "ws": "^8.19.0"
-    },
-    "devDependencies": {
-        "@types/vscode": "^1.80.0",
-        "eslint": "^8.41.0"
+    {
+      "url": "https://img.shields.io/github/license/TXAVLOG/txa-auto-accept?color=22d3ee",
+      "href": "https://github.com/TXAVLOG/txa-auto-accept/blob/main/LICENSE",
+      "description": "License"
     }
+  ],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Keymaps",
+    "Formatters"
+  ],
+  "keywords": [
+    "auto accept",
+    "auto click",
+    "security",
+    "shield",
+    "deny list",
+    "glassmorphism",
+    "liquid glass",
+    "dashboard",
+    "terminal protection",
+    "aurora ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "txa-auto-accept.openDashboard",
+        "title": "TXA: Open Dashboard"
+      },
+      {
+        "command": "txa-auto-accept.toggleEngine",
+        "title": "TXA: Toggle Engine (Enable/Disable)"
+      },
+      {
+        "command": "txa-auto-accept.resetCounter",
+        "title": "TXA: Reset Counter & Logs"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "txa-auto-accept.openDashboard",
+        "key": "alt+shift+a",
+        "mac": "cmd+alt+a"
+      },
+      {
+        "command": "txa-auto-accept.toggleEngine",
+        "key": "alt+a"
+      },
+      {
+        "command": "txa-auto-accept.resetCounter",
+        "key": "alt+r"
+      }
+    ],
+    "configuration": {
+      "title": "TXA Auto Accept",
+      "properties": {
+        "txa-auto-accept.language": {
+          "type": "string",
+          "enum": [
+            "vi",
+            "en"
+          ],
+          "default": "en",
+          "description": "Language for UI."
+        },
+        "txa-auto-accept.scanInterval": {
+          "type": "integer",
+          "default": 3000,
+          "description": "Scan interval in milliseconds."
+        },
+        "txa-auto-accept.autoClick": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable auto-clicking."
+        },
+        "txa-auto-accept.idleSeconds": {
+          "type": "integer",
+          "default": 5,
+          "description": "Seconds to wait after typing before resuming."
+        },
+        "txa-auto-accept.hotkey": {
+          "type": "string",
+          "default": "a",
+          "description": "Hotkey to toggle pause (Alt+Key)."
+        },
+        "txa-auto-accept.scrollIntoView": {
+          "type": "boolean",
+          "default": true,
+          "description": "Scroll into view before clicking."
+        },
+        "txa-auto-accept.customSelector": {
+          "type": "string",
+          "default": "",
+          "description": "Custom CSS selector for buttons."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "npx -y @vscode/vsce package",
+    "release:ovsx": "npx -y ovsx publish"
+  },
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "eslint": "^8.41.0"
+  }
 }

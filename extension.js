@@ -21,7 +21,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v5.0.0';
+    const VERSION = 'v6.0.0';
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
     // ── AUDIO ────────────────────────────────────────────────────────────────
@@ -260,6 +260,10 @@ function activate(context) {
                 case 'startGlobalPick':
                     if (cdpHandler) {
                         const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                        // Focus sang IDE editor để user có thể hover/click trong IDE window
+                        // (countdown 3s trong inject-script cho phép user chuyển focus)
+                        vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup')
+                            .then(() => { }, () => { }); // ignore nếu không có editor active
                         cdpHandler.setPickMode(true);
                         vscode.window.showInformationMessage(currentT.globalPickActive);
                     } else {
