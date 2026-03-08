@@ -158,7 +158,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
                 const dot = document.querySelector('.status-dot');
                 if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--error)';
                 const stext = document.getElementById('status-text');
-                if (stext) stext.textContent = (isEngineActive ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') + ' v4.0.8';
+                if (stext) stext.textContent = (isEngineActive ? (msg.autoClick ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') : 'Engine Paused • System at rest') + ' v5.0.0';
             } else if (msg.command === 'updateUptime') {
                 uptimeSeconds = msg.uptime;
                 updateUptimeDisplay();
@@ -176,7 +176,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
             state.log.slice(0, 30).forEach((item, i) => {
                 const div = document.createElement('div');
                 div.className = 'log-item ' + (item.status === 'denied' ? 'denied' : 'accepted');
-                div.onclick = () => div.classList.toggle('expanded');
+                
                 div.innerHTML = \`
                     <div class="log-main">
                         <span class="log-time">\${item.t}</span>
@@ -184,11 +184,18 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
                         <span class="log-status">\${item.status === 'denied' ? 'Blocked' : 'Allowed'}</span>
                     </div>
                     <div class="log-details">
-                        <p><strong>Reason:</strong> \${item.status === 'denied' ? 'Command matched a restricted pattern in the Protection Shield.' : 'Target detected and auto-clicked as expected.'}</p>
+                        <p><strong>Reason:</strong> \${item.status === 'denied' ? 'Command matched a restricted pattern in the Protection Shield.' : (item.details || 'Target detected and auto-clicked as expected.')}</p>
                         <p><strong>Impact:</strong> \${item.status === 'denied' ? 'Prevented potential system instability or data loss.' : 'Workflow automation continued successfully.'}</p>
                     </div>
                 \`;
-                list.insertBefore(div, list.firstChild);
+
+                // Chỉ cho phép toggle khi bấm vào phần tiêu đề (main)
+                div.querySelector('.log-main').onclick = (e) => {
+                    e.stopPropagation();
+                    div.classList.toggle('expanded');
+                };
+                
+                list.appendChild(div);
             });
         }
 
@@ -265,17 +272,28 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
         const pickerHoverBox = document.createElement('div');
         pickerHoverBox.style.cssText = 'position:fixed;pointer-events:none;border:2px solid var(--accent);background:rgba(167,139,250,0.15);z-index:9998;transition:all .1s;display:none;border-radius:4px';
         document.body.appendChild(pickerHoverBox);
-        
         const pickerTooltip = document.getElementById('txa-tooltip'); // Reuse main tooltip
 
         document.getElementById('btn-pick-element').onclick = (e) => {
             e.preventDefault();
-            alert("⚠️ Pick Mode activated inside Dashboard frame.\\nTo pick elements outside in the IDE, please use VS Code DevTools (Ctrl+Shift+I).");
-            isPickingMode = true;
-            pickerOverlay.style.display = 'block';
-            pickerBadge.style.display = 'block';
-            document.body.style.cursor = 'crosshair';
+            // Yêu cầu extension bật Global Pick qua CDP
+            vscode.postMessage({ command: 'startGlobalPick' });
         };
+
+        // Lắng nghe kết quả pick từ extension gửi về
+        window.addEventListener('message', event => {
+            const msg = event.data;
+            if (msg.command === 'pickedSelector') {
+                const inp = document.getElementById('cfg-selector');
+                if (inp) {
+                    inp.value = msg.selector;
+                    inp.style.borderColor = 'var(--success)';
+                    setTimeout(() => inp.style.borderColor = '', 1000);
+                    // Tự động chuyển qua tab config nếu đang ở tab khác
+                    document.querySelector('[data-tab="config"]').click();
+                }
+            }
+        });
 
         function getCssSelector(el) {
             if (el.id) return '#' + el.id;

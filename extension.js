@@ -1,23 +1,30 @@
+'use strict';
+
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 const { getWebviewContent } = require('./src/webview');
 const i18n = require('./src/i18n');
+const { CDPHandler } = require('./src/cdp/cdp-handler');
+const { Relauncher } = require('./src/cdp/relauncher');
 
 let activePanel = null;
+let cdpHandler = null;
+let cdpScanTimer = null;
+let relauncher = null;
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
     const config = vscode.workspace.getConfiguration('txa-auto-accept');
-    const lang = config.get('language', 'vi');
+    const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v4.0.8';
-    // Startup notification
+    const VERSION = 'v5.0.0';
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
+    // ── AUDIO ────────────────────────────────────────────────────────────────
     function getAudioData() {
         try {
             const audioPath = path.join(context.extensionPath, 'src', 'assets', 'notify.mp3');
@@ -28,31 +35,33 @@ function activate(context) {
         return null;
     }
 
+    // ── STATUS BAR ───────────────────────────────────────────────────────────
     let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
     statusBarItem.command = 'txa-auto-accept.openDashboard';
     context.subscriptions.push(statusBarItem);
 
-    // Initial state from memento
+    // ── STATE ─────────────────────────────────────────────────────────────────
     let state = {
         clicks: context.globalState.get('clicks', 0),
         denied: context.globalState.get('denied', 0),
         log: context.globalState.get('log', []),
         denyList: context.globalState.get('denyList', []),
-        uptime: context.globalState.get('uptime', 0)
+        uptime: context.globalState.get('uptime', 0),
+        _cdpLastClicks: 0
     };
 
     function updateStatusBar() {
-        const config = vscode.workspace.getConfiguration('txa-auto-accept');
-        const autoClick = config.get('autoClick', true);
-        const currentLang = config.get('language', 'vi');
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        const autoClick = cfg.get('autoClick', true);
+        const currentLang = cfg.get('language', 'en');
         const currentT = i18n[currentLang] || i18n.en;
+        const cdpCount = cdpHandler ? cdpHandler.getConnectionCount() : 0;
 
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗`;
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
         statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.8');
+        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : currentT.cdpNotConnected}`;
         statusBarItem.show();
 
-        // SYNC WITH OPEN WEBVIEW
         if (activePanel) {
             activePanel.webview.postMessage({
                 command: 'updateStats',
@@ -60,15 +69,16 @@ function activate(context) {
                 denied: state.denied,
                 log: state.log,
                 autoClick: autoClick,
-                uptime: state.uptime
+                uptime: state.uptime,
+                cdpConnections: cdpCount
             });
         }
     }
 
-    // Persistent Uptime Ticker in Core
+    // ── UPTIME TICKER ─────────────────────────────────────────────────────────
     setInterval(() => {
-        const config = vscode.workspace.getConfiguration('txa-auto-accept');
-        if (config.get('autoClick', true)) {
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        if (cfg.get('autoClick', true)) {
             state.uptime++;
             context.globalState.update('uptime', state.uptime);
             if (activePanel) {
@@ -79,32 +89,26 @@ function activate(context) {
 
     updateStatusBar();
 
-    // Command function definition
-    function handleAction(type, cmd) {
+    // ── HANDLE ACTION ─────────────────────────────────────────────────────────
+    function handleAction(type, cmd, details) {
         const time = new Date().toLocaleTimeString('vi-VN', { hour12: false });
         if (type === 'acc') {
             state.clicks++;
-            state.log.unshift({ t: time, cmd: cmd || 'Simulated Accept', status: 'accepted' });
+            state.log.unshift({ t: time, cmd: cmd || 'Auto-Accepted', status: 'accepted', details: details });
         } else {
             state.denied++;
-            state.log.unshift({ t: time, cmd: cmd || 'Simulated Deny', status: 'denied' });
+            state.log.unshift({ t: time, cmd: cmd || 'Blocked', status: 'denied', details: details });
         }
         if (state.log.length > 50) state.log.pop();
-
         context.globalState.update('clicks', state.clicks);
         context.globalState.update('denied', state.denied);
         context.globalState.update('log', state.log);
         updateStatusBar();
     }
 
-    // Register manual command
     vscode.commands.registerCommand('txa-auto-accept.simulateAction', handleAction);
 
-    // ==========================================
-    // TXA AUTO ACCEPT BACKGROUND ENGINE
-    // ==========================================
-    let engineTimer = null;
-
+    // ── DENY LIST HELPERS ─────────────────────────────────────────────────────
     function parseRegex(pattern) {
         try {
             if (pattern.startsWith('/') && pattern.lastIndexOf('/') > 0) {
@@ -113,69 +117,118 @@ function activate(context) {
                 return new RegExp(body, flags);
             }
             return new RegExp(pattern, 'i');
-        } catch (e) {
-            return new RegExp('.^');
-        }
+        } catch (e) { return new RegExp('.^'); }
     }
 
     function checkDenyList(actionText) {
         const { BUILTIN_DENY } = require('./src/constants');
         const customRules = state.denyList || [];
         for (const rule of [...customRules, ...BUILTIN_DENY]) {
-            if (parseRegex(rule.pattern).test(actionText)) {
-                return true;
-            }
+            if (parseRegex(rule.pattern).test(actionText)) return true;
         }
         return false;
     }
 
-    function startEngine() {
-        if (engineTimer) clearInterval(engineTimer);
-        const config = vscode.workspace.getConfiguration('txa-auto-accept');
-        const autoClick = config.get('autoClick', true);
-        if (!autoClick) return;
+    // ── BUILD CDP CONFIG ──────────────────────────────────────────────────────
+    function buildCDPConfig() {
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        return {
+            pollInterval: cfg.get('scanInterval', 1000),
+            bannedList: (state.denyList || []).map(r => r.pattern),
+            customSelector: cfg.get('customSelector', '')
+        };
+    }
 
-        // Monitor terminals for prompts
-        // Note: onDidWriteTerminalData is a proposed API that may not exist in all VS Code versions.
-        // We safely check for its existence to prevent activation failures.
-        try {
-            if (typeof vscode.window.onDidWriteTerminalData === 'function') {
-                context.subscriptions.push(vscode.window.onDidWriteTerminalData(e => {
-                    const config = vscode.workspace.getConfiguration('txa-auto-accept');
-                    if (!config.get('autoClick', true)) return;
+    // ── CDP ENGINE ────────────────────────────────────────────────────────────
+    function startCDPEngine() {
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        if (!cfg.get('autoClick', true)) { stopCDPEngine(); return; }
 
-                    const data = e.data;
-                    // Detect common confirmation prompts: [y/N], (y/n), etc.
-                    if (/\[[Yy]\/[Nn]\]|\([Yy]\/[Nn]\)|\? \(Y\/n\)/.test(data)) {
-                        setTimeout(() => {
-                            e.terminal.sendText('y');
-                            handleAction('acc', `Auto-Accepted Prompt in ${e.terminal.name}`);
-                        }, 500);
-                    }
+        if (!cdpHandler) {
+            cdpHandler = new CDPHandler((msg) => console.log(msg));
+        }
+        if (!relauncher) {
+            const currentT = i18n[vscode.workspace.getConfiguration('txa-auto-accept').get('language', 'en')] || i18n.en;
+            relauncher = new Relauncher((msg) => console.log(msg), currentT);
+        }
 
-                    // Shield Check: If dangerous pattern appears in terminal output
-                    if (checkDenyList(data)) {
-                        handleAction('den', `Blocked/Detected Threat in Terminal: ${e.terminal.name}`);
-                        vscode.window.showWarningMessage(`🛡️ TXA Shield: Detected threat in ${e.terminal.name}! Check your dashboard.`);
-                    }
-                }));
+        // Kiểm tra CDP available, nếu không thì tự setup shortcut
+        cdpHandler.isCDPAvailable().then(async (available) => {
+            if (available) {
+                await cdpHandler.start(buildCDPConfig());
+                updateStatusBar();
             } else {
-                // Fallback: API not available, terminal monitoring will be limited
-                console.log('[TXA] onDidWriteTerminalData not available, terminal monitoring disabled.');
+                console.log('[TXA] CDP not available, running auto-setup...');
+                try {
+                    await relauncher.ensureCDPAndRelaunch();
+                } catch (e) {
+                    console.warn('[TXA] Relauncher failed:', e.message);
+                }
             }
-        } catch (err) {
-            console.warn('[TXA] Could not attach terminal monitor:', err.message);
+        }).catch(() => { });
+
+        if (!cdpScanTimer) {
+            cdpScanTimer = setInterval(async () => {
+                const innerCfg = vscode.workspace.getConfiguration('txa-auto-accept');
+                if (!innerCfg.get('autoClick', true)) return;
+                try {
+                    const available = await cdpHandler.isCDPAvailable();
+                    if (available) {
+                        await cdpHandler.start(buildCDPConfig());
+
+                        // Sync CDP events vào state TXA
+                        const stats = await cdpHandler.getStats();
+                        if (stats.events && stats.events.length > 0) {
+                            stats.events.forEach(ev => {
+                                handleAction('acc', `Clicked [${ev.btn}]`, `Target: ${ev.cmd}`);
+                            });
+                        }
+                    }
+                    updateStatusBar();
+                } catch (e) { }
+            }, 5000);
         }
     }
 
-    startEngine();
+    function stopCDPEngine() {
+        if (cdpScanTimer) { clearInterval(cdpScanTimer); cdpScanTimer = null; }
+        if (cdpHandler) { cdpHandler.stop().catch(() => { }); }
+        updateStatusBar();
+    }
 
-    // Command to open dashboard
-    let disposable = vscode.commands.registerCommand('txa-auto-accept.openDashboard', function () {
-        if (activePanel) {
-            activePanel.reveal(vscode.ViewColumn.One);
-            return;
+    // ── TERMINAL MONITOR ─────────────────────────────────────────────────────
+    function startTerminalMonitor() {
+        try {
+            if (typeof vscode.window.onDidWriteTerminalData === 'function') {
+                context.subscriptions.push(vscode.window.onDidWriteTerminalData(e => {
+                    const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+                    if (!cfg.get('autoClick', true)) return;
+                    const data = e.data;
+                    if (/\[[Yy]\/[Nn]\]|\([Yy]\/[Nn]\)|\? \(Y\/n\)/.test(data)) {
+                        setTimeout(() => {
+                            e.terminal.sendText('y');
+                            handleAction('acc', `Auto-Accepted Terminal Prompt in ${e.terminal.name}`);
+                        }, 500);
+                    }
+                    if (checkDenyList(data)) {
+                        handleAction('den', `Shield Blocked Threat in: ${e.terminal.name}`);
+                        const currentT = i18n[vscode.workspace.getConfiguration('txa-auto-accept').get('language', 'en')] || i18n.en;
+                        vscode.window.showWarningMessage(`🛡️ TXA Shield: Detected threat in ${e.terminal.name}!`);
+                    }
+                }));
+            }
+        } catch (err) {
+            console.warn('[TXA] Terminal monitor error:', err.message);
         }
+    }
+
+    // ── START ─────────────────────────────────────────────────────────────────
+    startTerminalMonitor();
+    startCDPEngine();
+
+    // ── DASHBOARD ─────────────────────────────────────────────────────────────
+    let disposable = vscode.commands.registerCommand('txa-auto-accept.openDashboard', function () {
+        if (activePanel) { activePanel.reveal(vscode.ViewColumn.One); return; }
 
         activePanel = vscode.window.createWebviewPanel(
             'txaDashboard',
@@ -184,38 +237,50 @@ function activate(context) {
             { enableScripts: true, retainContextWhenHidden: true }
         );
 
-        const config = vscode.workspace.getConfiguration('txa-auto-accept');
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
         const suggestions = require('./src/suggestions');
-        const { getWebviewContent } = require('./src/webview');
-        activePanel.webview.html = getWebviewContent(config, state, suggestions, getAudioData());
+        activePanel.webview.html = getWebviewContent(cfg, state, suggestions, getAudioData());
 
-        activePanel.onDidDispose(() => {
-            activePanel = null;
-        }, null, context.subscriptions);
+        activePanel.onDidDispose(() => { activePanel = null; }, null, context.subscriptions);
 
         activePanel.webview.onDidReceiveMessage(message => {
             const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
             switch (message.command) {
                 case 'saveConfig':
-                    cfg.update('autoClick', message.autoClick, vscode.ConfigurationTarget.Global).then(() => {
-                        cfg.update('scanInterval', message.scanInterval, vscode.ConfigurationTarget.Global).then(() => {
-                            cfg.update('language', message.language, vscode.ConfigurationTarget.Global).then(() => {
-                                cfg.update('idleSeconds', message.idleSeconds, vscode.ConfigurationTarget.Global).then(() => {
-                                    cfg.update('customSelector', message.customSelector, vscode.ConfigurationTarget.Global).then(() => {
-                                        vscode.window.showInformationMessage('✅ TXA Engine Configuration Updated!');
-                                    });
-                                });
-                            });
+                    cfg.update('autoClick', message.autoClick, vscode.ConfigurationTarget.Global)
+                        .then(() => cfg.update('scanInterval', message.scanInterval, vscode.ConfigurationTarget.Global))
+                        .then(() => cfg.update('language', message.language, vscode.ConfigurationTarget.Global))
+                        .then(() => cfg.update('idleSeconds', message.idleSeconds, vscode.ConfigurationTarget.Global))
+                        .then(() => cfg.update('customSelector', message.customSelector, vscode.ConfigurationTarget.Global))
+                        .then(() => {
+                            const currentT = i18n[message.language || 'en'] || i18n.en;
+                            vscode.window.showInformationMessage(currentT.configUpdated);
                         });
-                    });
+                    return;
+                case 'startGlobalPick':
+                    if (cdpHandler) {
+                        const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                        cdpHandler.setPickMode(true);
+                        vscode.window.showInformationMessage(currentT.globalPickActive);
+                    } else {
+                        const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                        vscode.window.showErrorMessage(currentT.cdpNotAvailable);
+                    }
                     return;
                 case 'saveDenyList':
                     state.denyList = message.list;
                     context.globalState.update('denyList', state.denyList);
-                    vscode.window.showInformationMessage('🛡️ Shield Deny-List Secured!');
+                    if (cdpHandler) cdpHandler.updateConfig(buildCDPConfig()).catch(() => { });
+                    const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                    vscode.window.showInformationMessage(currentT.shieldSecured);
                     return;
                 case 'resetCounter':
                     vscode.commands.executeCommand('txa-auto-accept.resetCounter');
+                    return;
+                case 'clearLog':
+                    state.log = [];
+                    context.globalState.update('log', []);
+                    updateStatusBar();
                     return;
                 case 'openLink':
                     vscode.env.openExternal(vscode.Uri.parse(message.url));
@@ -224,43 +289,73 @@ function activate(context) {
         });
     });
 
+    // Cập nhật timer quét CDP để hỗ trợ lấy selector đã pick
+    const origTimer = cdpScanTimer;
+    if (cdpScanTimer) clearInterval(cdpScanTimer);
+    cdpScanTimer = setInterval(async () => {
+        const innerCfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        if (!innerCfg.get('autoClick', true)) return;
+        try {
+            if (cdpHandler) {
+                // Kiểm tra xem có selector nào vừa được pick không
+                const picked = await cdpHandler.getPickedSelector();
+                if (picked && activePanel) {
+                    activePanel.webview.postMessage({ command: 'pickedSelector', selector: picked });
+                    const currentT = i18n[innerCfg.get('language', 'en')] || i18n.en;
+                    vscode.window.showInformationMessage(currentT.selectorCaptured.replace('{0}', picked));
+                }
+
+                // Quét thông thường
+                const available = await cdpHandler.isCDPAvailable();
+                if (available) {
+                    await cdpHandler.start(buildCDPConfig());
+                    const stats = await cdpHandler.getStats();
+                    if (stats.events && stats.events.length > 0) {
+                        stats.events.forEach(ev => {
+                            handleAction('acc', `Clicked [${ev.btn}]`, `Target: ${ev.cmd}`);
+                        });
+                    }
+                }
+            }
+            updateStatusBar();
+        } catch (e) { }
+    }, 2000);
+
     context.subscriptions.push(disposable);
 
-    // Register Toggle Engine command
+    // ── TOGGLE ENGINE ──────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleEngine', () => {
-        const config = vscode.workspace.getConfiguration('txa-auto-accept');
-        const current = config.get('autoClick', true);
-        config.update('autoClick', !current, vscode.ConfigurationTarget.Global).then(() => {
-            const statusMsg = !current ? '🚀 TXA Engine Activated!' : '⏸️ TXA Engine Paused!';
-            vscode.window.showInformationMessage(statusMsg);
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        const current = cfg.get('autoClick', true);
+        cfg.update('autoClick', !current, vscode.ConfigurationTarget.Global).then(() => {
+            const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+            vscode.window.showInformationMessage(!current ? currentT.engineActivated : currentT.enginePaused);
             updateStatusBar();
+            if (!current) startCDPEngine(); else stopCDPEngine();
         });
     }));
 
-    // Register Reset Counter command
+    // ── RESET COUNTER ──────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.resetCounter', () => {
-        state.clicks = 0;
-        state.denied = 0;
-        state.uptime = 0;
-        state.log = [];
+        state.clicks = 0; state.denied = 0; state.uptime = 0;
+        state.log = []; state._cdpLastClicks = 0;
         context.globalState.update('clicks', 0);
         context.globalState.update('denied', 0);
         context.globalState.update('uptime', 0);
         context.globalState.update('log', []);
         updateStatusBar();
-        vscode.window.showInformationMessage('🔄 Counter and Logs have been reset.');
+        const currentT = i18n[vscode.workspace.getConfiguration('txa-auto-accept').get('language', 'en')] || i18n.en;
+        vscode.window.showInformationMessage(currentT.resetSuccess);
     }));
 
-    // Watch config changes
+    // ── CONFIG WATCHER ─────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('txa-auto-accept')) {
             updateStatusBar();
-            startEngine();
-
+            const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+            if (cfg.get('autoClick', true)) startCDPEngine(); else stopCDPEngine();
             if (activePanel) {
-                const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
                 const suggestions = require('./src/suggestions');
-                const { getWebviewContent } = require('./src/webview');
                 activePanel.webview.html = getWebviewContent(cfg, state, suggestions, getAudioData());
             }
         }
@@ -268,9 +363,8 @@ function activate(context) {
 }
 
 function deactivate() {
-    const config = vscode.workspace.getConfiguration('txa-auto-accept');
-    const autoClick = config.get('autoClick', true);
-    if (!autoClick) return;
+    if (cdpScanTimer) clearInterval(cdpScanTimer);
+    if (cdpHandler) cdpHandler.stop().catch(() => { });
 }
 
 module.exports = { activate, deactivate };

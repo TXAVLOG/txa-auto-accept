@@ -1,8 +1,8 @@
 {
     "name": "txa-auto-accept",
     "displayName": "TXA Auto Accept",
-    "description": "Auto Accept Engine with Liquid Glass 2026 Dashboard, Aurora Particles, Threat Meter & Shield Deny-List.",
-    "version": "4.0.8",
+    "description": "Auto Accept Engine with CDP DOM Click — tự động click Run/Accept trong IDE UI. Liquid Glass 2026 Dashboard.",
+    "version": "5.0.0",
     "icon": "icon.png",
     "publisher": "txa-team",
     "author": "TXA Team",
@@ -94,7 +94,7 @@
                         "vi",
                         "en"
                     ],
-                    "default": "vi",
+                    "default": "en",
                     "description": "Language for UI."
                 },
                 "txa-auto-accept.scanInterval": {
@@ -131,8 +131,11 @@
         }
     },
     "scripts": {
-        "build": "npx -y @vscode/vsce package --no-dependencies",
+        "build": "npx -y @vscode/vsce package",
         "release:ovsx": "npx -y ovsx publish"
+    },
+    "dependencies": {
+        "ws": "^8.19.0"
     },
     "devDependencies": {
         "@types/vscode": "^1.80.0",
