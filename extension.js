@@ -14,7 +14,7 @@ function activate(context) {
     const lang = config.get('language', 'vi');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v4.0.6';
+    const VERSION = 'v4.0.7';
     // Startup notification
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
@@ -49,7 +49,7 @@ function activate(context) {
 
         statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗`;
         statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
-        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.6');
+        statusBarItem.tooltip = currentT.statusBarTooltip.replace('{0}', 'v4.0.7');
         statusBarItem.show();
 
         // SYNC WITH OPEN WEBVIEW

@@ -4,6 +4,9 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [4.0.7] - 2026-03-07
+- Sửa lỗi các nút bấm trên Dashboard không nhận thao tác click do lớp overlay của Pick Mode chặn sự kiện.
+
 ## [4.0.6] - 2026-03-07
 ### Added
 - Tích hợp âm thanh thông báo cao cấp "Quantum Bloom" (Đã qua xử lý fade/trim).

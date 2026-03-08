@@ -13,7 +13,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                 <div class="logo-wrapper">${LOGO_SVG}</div>
                 <div class="brand-text">
                     <h1>${t.title}</h1>
-                    <span>v4.0.6 · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
+                    <span>v4.0.7 · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
                 </div>
             </div>
             <div class="nav-tabs">
@@ -65,7 +65,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
 
             <div class="engine-status">
                 <span class="status-dot"></span>
-                <span id="status-text">${t.engineStatus} v4.0.6</span>
+                <span id="status-text">${t.engineStatus} v4.0.7</span>
             </div>
 
             <div class="action-row">
@@ -161,7 +161,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
             <div class="about-panel">
                 <div class="about-logo">${LOGO_SVG}</div>
                 <div class="about-title">${t.title}</div>
-                <div class="about-version">v4.0.6 · Liquid Glass Engine 2026</div>
+                <div class="about-version">v4.0.7 · Liquid Glass Engine 2026</div>
                 <p class="about-desc">${t.aboutDesc}</p>
                 <div class="about-links">
                     <a href="#" class="about-link" id="link-github">

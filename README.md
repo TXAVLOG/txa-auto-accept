@@ -1,6 +1,6 @@
 # 🛡️ TXA Auto Accept — Liquid Glass 2026 Premium
 
-[![Version](https://img.shields.io/badge/version-4.0.6-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-4.0.7-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=22d3ee&style=for-the-badge)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-a78bfa.svg?style=for-the-badge)](LICENSE)
 
@@ -49,7 +49,7 @@ Là một Coder thực thụ, bạn có 2 cách siêu nhanh gọn để tích h�
 
 ### 📦 Cách 2: Setup file VSIX truyền thống (Cho Master Offline)
 1. Thưởng thức UI Store cực đỉnh tại [Cửa hàng TXA TEAM Store](https://txavlog.github.io/txa-auto-accept/) hoặc xem logs ở repo [GitHub Releases](https://github.com/TXAVLOG/txa-auto-accept/releases).
-2. Tải phiên bản `.vsix` đuôi mới nhất `txa-auto-accept-4.0.6.vsix`.
+2. Tải phiên bản `.vsix` đuôi mới nhất `txa-auto-accept-4.0.7.vsix`.
 3. Mở VS Code → **Extensions** (`Ctrl+Shift+X`).
 4. Tại góc trên cùng bên phải, nhấp vào menu dấu 3 chấm `...` → Chọn **Install from VSIX...** → Click vào file mới tải. Cài xong là chạy ngay!
 
