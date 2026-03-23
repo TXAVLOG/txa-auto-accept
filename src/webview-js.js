@@ -134,36 +134,58 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
             const msg = event.data;
             if (msg.command === 'updateStats') {
                 const accEl = document.getElementById('val-acc');
-                const denEl = document.getElementById('val-den');
+                const timeEl = document.getElementById('val-time-saved');
+                const weeklyEl = document.getElementById('val-weekly-clicks');
+
                 if (state.clicks !== msg.clicks) {
                     accEl.innerText = msg.clicks;
                     accEl.classList.remove('changed'); void accEl.offsetWidth; accEl.classList.add('changed');
+                    
+                    // Tính ROI: 5s mỗi click
+                    const minutes = Math.round((msg.clicks * 5) / 60);
+                    if (timeEl) timeEl.innerText = minutes;
+                    
                     playSound('accepted');
                 }
-                if (state.denied !== msg.denied) {
-                    denEl.innerText = msg.denied;
-                    denEl.classList.remove('changed'); void denEl.offsetWidth; denEl.classList.add('changed');
-                    playSound('blocked');
+                
+                if (weeklyEl && msg.weeklyClicks !== undefined) {
+                    weeklyEl.innerText = msg.weeklyClicks;
                 }
+
                 isEngineActive = msg.autoClick;
                 state.clicks = msg.clicks;
                 state.denied = msg.denied;
+                state.weeklyClicks = msg.weeklyClicks;
                 state.log = msg.log;
+                state.backgroundMode = msg.backgroundMode;
                 uptimeSeconds = msg.uptime;
+                
+                // Sync background toggle UI
+                const bgToggle = document.getElementById('btn-toggle-background');
+                if (bgToggle) bgToggle.checked = !!state.backgroundMode;
+
                 renderLogs();
                 updateThreat();
                 updateUptimeDisplay();
                 
                 // Update engine status dot & text
                 const dot = document.querySelector('.status-dot');
-                if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--error)';
+                if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--danger)';
                 const stext = document.getElementById('status-text');
-                if (stext) stext.textContent = (isEngineActive ? (msg.autoClick ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') : 'Engine Paused • System at rest') + ' v6.0.0';
+                if (stext) stext.textContent = (isEngineActive ? 'Engine Active • Ready to monitor' : 'Engine Paused • System at rest') + ' v7.0.0';
             } else if (msg.command === 'updateUptime') {
                 uptimeSeconds = msg.uptime;
                 updateUptimeDisplay();
             }
         });
+
+        // Background Mode Toggle
+        const bgBtn = document.getElementById('btn-toggle-background');
+        if (bgBtn) {
+            bgBtn.onchange = () => {
+                vscode.postMessage({ command: 'toggleBackground' });
+            };
+        }
 
         // === RENDER LOGS ===
         function renderLogs() {

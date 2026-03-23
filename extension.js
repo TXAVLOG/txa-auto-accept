@@ -21,7 +21,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v6.0.0';
+    const VERSION = 'v7.0.0';
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
     // ── AUDIO ────────────────────────────────────────────────────────────────
@@ -47,8 +47,27 @@ function activate(context) {
         log: context.globalState.get('log', []),
         denyList: context.globalState.get('denyList', []),
         uptime: context.globalState.get('uptime', 0),
+        // ROI Stats
+        weeklyClicks: context.globalState.get('weeklyClicks', 0),
+        weekStart: context.globalState.get('weekStart', Date.now()),
+        timeSavedMinutes: 0,
+        backgroundMode: context.globalState.get('backgroundMode', false),
         _cdpLastClicks: 0
     };
+
+    function updateROI() {
+        const SECONDS_PER_CLICK = 5;
+        state.timeSavedMinutes = Math.round((state.clicks * SECONDS_PER_CLICK) / 60);
+        
+        // Reset hàng tuần
+        const now = Date.now();
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        if (now - state.weekStart > oneWeek) {
+            state.weeklyClicks = 0;
+            state.weekStart = now;
+            context.globalState.update('weekStart', now);
+        }
+    }
 
     function updateStatusBar() {
         const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
@@ -56,10 +75,21 @@ function activate(context) {
         const currentLang = cfg.get('language', 'en');
         const currentT = i18n[currentLang] || i18n.en;
         const cdpCount = cdpHandler ? cdpHandler.getConnectionCount() : 0;
+        
+        updateROI();
 
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
-        statusBarItem.color = autoClick ? '#22d3ee' : '#f43f5e';
-        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : currentT.cdpNotConnected}`;
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.backgroundMode ? '$(globe)' : ''}${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
+        
+        // Màu sắc linh hoạt: Xanh khi chạy, Đỏ khi tắt, Tím khi Background Mode
+        if (!autoClick) {
+            statusBarItem.color = '#f43f5e'; // Red
+        } else if (state.backgroundMode) {
+            statusBarItem.color = '#a78bfa'; // Purple
+        } else {
+            statusBarItem.color = '#22d3ee'; // Cyan
+        }
+
+        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${state.timeSavedMinutes} minutes saved\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : currentT.cdpNotConnected}`;
         statusBarItem.show();
 
         if (activePanel) {
@@ -70,7 +100,10 @@ function activate(context) {
                 log: state.log,
                 autoClick: autoClick,
                 uptime: state.uptime,
-                cdpConnections: cdpCount
+                cdpConnections: cdpCount,
+                weeklyClicks: state.weeklyClicks,
+                timeSavedMinutes: state.timeSavedMinutes,
+                backgroundMode: state.backgroundMode
             });
         }
     }
@@ -94,6 +127,8 @@ function activate(context) {
         const time = new Date().toLocaleTimeString('vi-VN', { hour12: false });
         if (type === 'acc') {
             state.clicks++;
+            state.weeklyClicks++;
+            context.globalState.update('weeklyClicks', state.weeklyClicks);
             state.log.unshift({ t: time, cmd: cmd || 'Auto-Accepted', status: 'accepted', details: details });
         } else {
             state.denied++;
@@ -135,7 +170,8 @@ function activate(context) {
         return {
             pollInterval: cfg.get('scanInterval', 1000),
             bannedList: (state.denyList || []).map(r => r.pattern),
-            customSelector: cfg.get('customSelector', '')
+            customSelector: cfg.get('customSelector', ''),
+            backgroundMode: state.backgroundMode
         };
     }
 
@@ -327,13 +363,34 @@ function activate(context) {
 
     context.subscriptions.push(disposable);
 
+    context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleBackground', () => {
+        state.backgroundMode = !state.backgroundMode;
+        context.globalState.update('backgroundMode', state.backgroundMode);
+        updateStatusBar();
+        if (cdpHandler) cdpHandler.updateConfig(buildCDPConfig()).catch(() => { });
+        const currentT = i18n[vscode.workspace.getConfiguration('txa-auto-accept').get('language', 'en')] || i18n.en;
+        vscode.window.showInformationMessage(state.backgroundMode ? 'Background Mode: ON' : 'Background Mode: OFF');
+    }));
+
     // ── TOGGLE ENGINE ──────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleEngine', () => {
         const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
         const current = cfg.get('autoClick', true);
         cfg.update('autoClick', !current, vscode.ConfigurationTarget.Global).then(() => {
             const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
-            vscode.window.showInformationMessage(!current ? currentT.engineActivated : currentT.enginePaused);
+            if (!current) {
+                vscode.window.showInformationMessage(currentT.engineActivated);
+                state._cdpLastClicks = state.clicks; // Lưu mốc bắt đầu phiên
+            } else {
+                // Hiển thị thông báo tổng kết đẹp như ảnh mẫu
+                const sessionClicks = state.clicks - (state._cdpLastClicks || 0);
+                const msg = `Auto Accept: ${sessionClicks} actions handled this session`;
+                vscode.window.showInformationMessage(msg, { detail: 'Source: TXA Auto Accept Agent', modal: false }, 'View Stats').then(selection => {
+                    if (selection === 'View Stats') {
+                        vscode.window.showInformationMessage(`Bạn đã tiết kiệm được khoảng ${sessionClicks * 5} giây trong phiên vừa qua!`);
+                    }
+                });
+            }
             updateStatusBar();
             if (!current) startCDPEngine(); else stopCDPEngine();
         });

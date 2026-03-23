@@ -2,7 +2,7 @@
   "name": "txa-auto-accept",
   "displayName": "TXA Auto Accept",
   "description": "Auto Accept Engine with CDP DOM Click \u2014 t\u1ef1 \u0111\u1ed9ng click Run/Accept trong IDE UI. Liquid Glass 2026 Dashboard.",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "icon": "icon.png",
   "publisher": "txa-team",
   "author": "TXA Team",
@@ -131,7 +131,7 @@
     }
   },
   "scripts": {
-    "build": "npx -y @vscode/vsce package",
+    "build": "npx -y @vscode/vsce package --allow-missing-repository --skip-license",
     "release:ovsx": "npx -y ovsx publish"
   },
   "dependencies": {

@@ -374,46 +374,131 @@
         return s;
     };
 
+    // ── CONFIG & STATE ────────────────────────────────────────────────────────
+    let backgroundMode = false;
+    let cycleTimer = null;
+    let overlayEl = null;
+
+    // ── OVERLAY MANAGEMENT (Responsive) ───────────────────────────────────────
+    function ensureOverlay() {
+        if (overlayEl) return;
+        overlayEl = document.createElement('div');
+        overlayEl.id = 'txa-status-overlay';
+        overlayEl.style.cssText = `
+            position: fixed; pointer-events: none; z-index: 999999;
+            border: 2px solid transparent; border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(167, 139, 250, 0.05);
+            display: none; box-sizing: border-box;
+        `;
+        document.body.appendChild(overlayEl);
+
+        // Responsive bám dính: Theo dõi sự thay đổi kích thước của Sidebar/Panel
+        const observer = new ResizeObserver(() => syncOverlayPosition());
+        const aiPanel = document.querySelector('.ai-panel-container, [class*="anysphere-"]');
+        if (aiPanel) observer.observe(aiPanel);
+        observer.observe(document.body);
+    }
+
+    function syncOverlayPosition() {
+        if (!overlayEl) return;
+        // Thử tìm khung chat AI của Cursor hoặc Antigravity
+        const panel = document.querySelector('.ai-panel-container') || 
+                      document.querySelector('[class*="anysphere-main"]') ||
+                      document.querySelector('.sidebar');
+        
+        if (panel && window.__txaRunning) {
+            const rect = panel.getBoundingClientRect();
+            overlayEl.style.display = 'block';
+            overlayEl.style.top = rect.top + 'px';
+            overlayEl.style.left = rect.left + 'px';
+            overlayEl.style.width = rect.width + 'px';
+            overlayEl.style.height = rect.height + 'px';
+            
+            // Màu sắc theo trạng thái
+            if (backgroundMode) {
+                overlayEl.style.borderColor = '#a78bfa'; // Purple (Background)
+                overlayEl.style.boxShadow = '0 0 20px rgba(167, 139, 250, 0.2) inset';
+            } else {
+                overlayEl.style.borderColor = '#22d3ee'; // Cyan (Active)
+                overlayEl.style.boxShadow = '0 0 20px rgba(34, 211, 238, 0.15) inset';
+            }
+        } else {
+            overlayEl.style.display = 'none';
+        }
+    }
+
+    // ── TAB CYCLING (BACKGROUND MODE) ─────────────────────────────────────────
+    async function cycleTabs() {
+        if (!backgroundMode || !window.__txaRunning) return;
+        
+        // Thử tìm các tab trong Cursor
+        const tabs = queryAll('.tabs-container [role="tab"], .anysphere-tab-item');
+        if (tabs.length > 1) {
+            let activeIdx = tabs.findIndex(t => t.classList.contains('active') || t.getAttribute('aria-selected') === 'true');
+            let nextIdx = (activeIdx + 1) % tabs.length;
+            
+            log(`Cycling Tab: ${activeIdx} -> ${nextIdx}`);
+            tabs[nextIdx].click();
+            await new Promise(r => setTimeout(r, 800)); // Đợi tab load
+        }
+    }
+
     // ── LIFECYCLE ──────────────────────────────────────────────────────────────
     window.__txaStart = async function (config) {
         if (window.__txaRunning) {
-            log('Already running, updating config...');
+            log('Updating config...');
+            backgroundMode = !!config.backgroundMode;
             if (config.bannedList) window.__txaBannedList = config.bannedList;
             if (config.customSelector) window.__txaCustomSelector = config.customSelector;
+            syncOverlayPosition();
             return;
         }
 
         window.__txaRunning = true;
+        backgroundMode = !!config.backgroundMode;
         window.__txaStats = window.__txaStats || { clicks: 0, events: [] };
         window.__txaBannedList = config.bannedList || [];
         window.__txaCustomSelector = config.customSelector || '';
-        const interval = config.pollInterval || 1000;
+        
+        ensureOverlay();
+        syncOverlayPosition();
 
-        log(`Started (pollInterval=${interval}ms, selector=${window.__txaCustomSelector})`);
+        log(`Started (BackgroundMode=${backgroundMode})`);
 
+        // Vòng lặp quét
         while (window.__txaRunning) {
             try {
+                if (backgroundMode) await cycleTabs();
+                
                 await scrollToBottom();
-                await performClick(['button', '[class*="button" i]', '[class*="anysphere" i]']);
+                const selectors = [
+                    'button', '[class*="button" i]', 
+                    '.anysphere-confirm-button', // Cursor
+                    '.monaco-button.monaco-text-button' // VS Code default
+                ];
+                await performClick(selectors);
+                syncOverlayPosition();
             } catch (e) {
                 log(`Loop error: ${e.message}`);
             }
-            await new Promise(r => setTimeout(r, interval));
+            await new Promise(r => setTimeout(r, config.pollInterval || 1000));
         }
         log('Stopped.');
+        if (overlayEl) overlayEl.style.display = 'none';
     };
 
     window.__txaStop = function () {
         window.__txaRunning = false;
+        if (overlayEl) overlayEl.style.display = 'none';
         log('Stop signal sent.');
     };
 
     window.__txaGetStats = function () {
         const stats = JSON.stringify(window.__txaStats || { clicks: 0, events: [] });
-        // Xóa log sau khi lấy để tránh bộ nhớ đầy và trùng lặp
         if (window.__txaStats) window.__txaStats.events = [];
         return stats;
     };
 
-    log('Inject script loaded.');
+    log('Inject script v13.0-Hybrid loaded.');
 })();
