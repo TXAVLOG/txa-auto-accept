@@ -132,7 +132,7 @@
   },
   "scripts": {
     "build": "npx -y @vscode/vsce package --allow-missing-repository --skip-license",
-    "release:ovsx": "npx -y ovsx publish --allow-missing-repository"
+    "release:ovsx": "npx -y ovsx publish"
   },
   "dependencies": {
     "ws": "^8.19.0"
