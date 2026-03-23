@@ -4,55 +4,39 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.2.3] — 2026-03-24
+### Changed
+- Phục hồi nhà phát hành (Publisher) về `txa-team` theo yêu cầu người dùng.
+- Giữ vững toàn bộ các bản vá ổn định và sửa lỗi từ v7.2.1.
+- Cập nhật lại toàn bộ link tải và ID tiện ích về txa-team trên Dashboard và README.
+
+## [7.2.1] — 2026-03-23
+### Fixed
+- **Triệt tiêu lỗi Engine Stop**: Sửa lỗi nghiêm trọng khi Engine báo đỏ (Off) nhưng vẫn tự động Click.
+- Hợp nhất các vòng lặp quét (Unified Scan Loops) để tối ưu hóa tài nguyên IDE.
+- Lệnh dừng tuyệt đối `__txaStop()` được gửi trực tiếp vào Browser/IDE UI.
+
+## [7.2.0] — 2026-03-23
+### Added
+- **Dual-Loop Architecture**: Tách biệt hoàn toàn vòng lặp Bấm nút (Clicking) và Xoay Tab (Tab Cycling) mỗi 3 giây.
+- **Auto IDE Detection**: Tự động nhận diện IDE (Cursor hoặc Antigravity) để áp dụng Selector chuẩn xác nhất.
+- **User Interaction Guard**: Tự động tạm dừng Engine trong 1.5 giây khi phát hiện người dùng thao tác chuột thủ công.
+- **Status Overlay 2.0**: Hiển thị danh sách Tab đang chạy ngầm và trạng thái hoàn thành trực tiếp trên màn hình.
+
+## [7.1.0] — 2026-03-22
+### Added
+- Ra mắt phiên bản **Hybrid Engine** đầu tiên (Kết hợp CDP DOM Click + Terminal Output Monitor).
+- **Dashboard Liquid Glass 2026 Premium**: Giao diện siêu mượt với hiệu ứng kính mờ và Aurora.
+- **ROI Analytics**: Hệ thống theo dõi thời gian tiết kiệm được (Time Saved) theo thời gian thực.
+
+## [6.0.0] — 2026-03-20
+### Added
+- Thiết kế lại toàn bộ hệ thống lõi sang hướng bảo mật Shield Protection.
+
 ## [4.0.8] - 2026-03-08
 ### Fixed
-- Sửa lỗi nghiêm trọng: Toàn bộ shortcut và command không hoạt động do `onDidWriteTerminalData` (Proposed API) đã bị xóa khỏi VS Code mới.
-- Extension giờ sẽ kiểm tra API tồn tại trước khi sử dụng, đảm bảo activate thành công trên mọi phiên bản.
-
-## [4.0.7] - 2026-03-07
-- Sửa lỗi các nút bấm trên Dashboard không nhận thao tác click do lớp overlay của Pick Mode chặn sự kiện.
-
-## [4.0.6] - 2026-03-07
-### Added
-- Tích hợp âm thanh thông báo cao cấp "Quantum Bloom" (Đã qua xử lý fade/trim).
-- Chuyển âm thanh sang cơ chế Base64 để hoạt động ổn định trên mọi môi trường.
-- Đồng bộ hóa phiên bản hệ thống lên v4.0.6.
-
-## [4.0.5] - 2026-03-07
-### Added
-- Âm thanh thông báo (Sound Notifications) khi chặn hoặc chấp nhận mục tiêu.
-- Mở rộng chi tiết nhật ký (Log Details) khi nhấp vào dòng log.
-- Cải thiện bộ đếm thời gian (Uptime Ticker): Tự động tạm dừng khi Engine tắt.
-- Bố sung nhãn (Label) và tooltip giải thích cho bộ đếm Uptime.
-- Tên phiên bản trong thông báo khởi động giờ đã được cập nhật tự động.
-
-## [4.0.4] - 2026-03-07
-### Added
-- Thiết kế lại mục Tính năng trong README sang phong cách hiện đại, bền vững hơn.
-
-## [4.0.3] - 2026-03-07
-### Added
-- Bổ sung tệp `CHANGELOG.md` để hiển thị lịch sử cập nhật trên Open VSX.
-- Tối ưu hóa mô tả hướng dẫn cài đặt trong README.
-
-## [4.0.2] - 2026-03-07
-### Fixed
-- Cập nhật hướng dẫn cài đặt qua Extensions Panel với mã định danh `@id:txa-team.txa-auto-accept`.
-- Tối ưu hóa hệ thống thông báo cập nhật tự động.
-
-## [4.0.1] - 2026-03-07
-### Added
-- Mở rộng tài liệu hướng dẫn chi tiết trong README.
-- Đồng bộ hóa phiên bản trên các nền tảng Store.
-
-## [4.0.0] - 2026-03-07
-### Added
-- **Liquid Glass 2026 UI**: Giao diện hoàn toàn mới với hiệu ứng Aurora và Particles.
-- **Target Lock**: Cơ chế khóa mục tiêu bằng CSS Selector.
-- **Shield Deny-List**: Tích hợp sẵn 60+ quy tắc bảo vệ Terminal.
-- **Threat Meter**: Thanh đo lường mức độ nguy hiểm thời gian thực.
-- **Uptime Ticker**: Theo dõi thời gian hoạt động của Engine.
-- **Smart Idle**: Tự động tạm dừng khi người dùng gõ phím.
+- Sửa lỗi nghiêm trọng: Toàn bộ shortcut và command không hoạt động do `onDidWriteTerminalData` (Proposed API).
+- Extension giờ sẽ kiểm tra API tồn tại trước khi sử dụng.
 
 ---
 *Phát triển bởi **TXA Team**.*

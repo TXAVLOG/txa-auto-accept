@@ -21,7 +21,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.2.2';
+    const VERSION = 'v7.2.3';
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
     // ── AUDIO ────────────────────────────────────────────────────────────────
