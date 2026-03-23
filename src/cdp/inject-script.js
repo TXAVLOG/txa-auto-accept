@@ -60,17 +60,18 @@
             overlay.id = OVERLAY_ID;
             overlay.style.cssText = `
                 position: fixed; z-index: 2147483647; pointer-events: none;
-                display: flex; flex-direction: column; align-items: center; justify-content: center;
-                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(25px);
-                border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 60px rgba(0,0,0,0.6);
-                opacity: 0; color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden;
+                display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                background: linear-gradient(180deg, rgba(168, 85, 247, 0.1), rgba(10, 10, 20, 0.85)); 
+                backdrop-filter: blur(10px); color: #fff;
+                border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 12px;
+                opacity: 0; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden;
             `;
             const content = document.createElement('div');
             content.id = OVERLAY_ID + '_content';
-            content.style.padding = '25px';
+            content.style.padding = '12px 18px';
             content.style.width = '100%';
-            content.style.textAlign = 'center';
+            content.style.boxSizing = 'border-box';
             overlay.appendChild(content);
             document.body.appendChild(overlay);
 
@@ -80,11 +81,12 @@
                 const panel = queryAll('#antigravity\\.agentPanel, #workbench\\.parts\\.auxiliarybar, .auxiliary-bar-container').find(p => p.offsetWidth > 100);
                 if (panel) {
                     const r = panel.getBoundingClientRect();
-                    overlay.style.top = r.top + 'px';
-                    overlay.style.left = r.left + 'px';
-                    overlay.style.width = r.width + 'px';
-                    overlay.style.height = r.height + 'px';
-                    overlay.style.opacity = '1';
+                    // Positioning: Bottom footer pill inside the panel area
+                    overlay.style.top = (r.bottom - 120) + 'px'; 
+                    overlay.style.left = (r.left + 10) + 'px';
+                    overlay.style.width = (r.width - 20) + 'px';
+                    overlay.style.height = '110px';
+                    overlay.style.opacity = s.userInteracting ? '0.1' : '1';
                 } else {
                     overlay.style.opacity = '0';
                 }

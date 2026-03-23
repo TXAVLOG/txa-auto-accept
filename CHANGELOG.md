@@ -4,6 +4,16 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.3-preview] — 2026-03-24
+### Added
+- **Non-intrusive Overlay (Footer Pill)**: Thu nhỏ lớp phủ trạng thái thành dạng thanh điều hướng dưới cùng, không còn che khuất khung Chat AI Antigravity. ✅
+- **Hybrid Engine v15.0 Ignition**: Mở rộng bộ lọc phần tử cực nhạy. Tự động nhận diện nút qua `aria-label`, `title` và Text nội dung. Hỗ trợ 100% các nút Icon nhỏ. ✅
+### Fixed
+- **User Interaction Guard Optimized**: Tự động mờ đi hoàn toàn (Opacity 0.1) khi phát hiện người dùng thao tác trực tiếp trên khung AI.
+### Changed
+- Phục hồi nhà phát hành (Publisher) về `txa-team` theo yêu cầu người dùng.
+- Cập nhật đồng bộ link tải và ID tiện ích trên toàn bộ Dashboard và tài liệu.
+
 ## [7.3.1-preview] — 2026-03-24
 ### Fixed
 - **Hotfix**: Sửa lỗi `relauncher.checkCDP is not a function` gây treo Engine khi khởi động.
@@ -15,12 +25,6 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 - **Aurora Overlay 2026 Premium**: Giao diện lớp phủ được nâng cấp với hiệu ứng Aurora và kính mờ (Glassmorphism) rực rỡ.
 - **Improved AI Targeting**: Tối ưu bộ Selector cho mọi AI Assistant (Cline, Roo Code, Antigravity, Cursor).
 - **Release Preview Branding**: Gắn tag và cập nhật giao diện Dashboard cho phiên bản xem trước.
-
-## [7.2.3] — 2026-03-24
-### Changed
-- Phục hồi nhà phát hành (Publisher) về `txa-team` theo yêu cầu người dùng.
-- Giữ vững toàn bộ các bản vá ổn định và sửa lỗi từ v7.2.1.
-- Cập nhật lại toàn bộ link tải và ID tiện ích về txa-team trên Dashboard và README.
 
 ## [7.2.1] — 2026-03-23
 ### Fixed
