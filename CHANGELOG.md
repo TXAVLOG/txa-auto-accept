@@ -4,12 +4,10 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
-## [7.3.4] — 2026-03-24
+## [7.3.5] — 2026-03-24
 ### Added
-- **Non-intrusive Overlay (Footer Pill)**: Thu nhỏ lớp phủ trạng thái thành dạng thanh điều hướng dưới cùng, không còn che khuất khung Chat AI Antigravity. ✅
-- **Hybrid Engine v15.0 Ignition**: Mở rộng bộ lọc phần tử cực nhạy. Tự động nhận diện nút qua `aria-label`, `title` và Text nội dung. Hỗ trợ 100% các nút Icon nhỏ. ✅
-### Fixed
-- **User Interaction Guard Optimized**: Tự động mờ đi hoàn toàn (Opacity 0.1) khi phát hiện người dùng thao tác trực tiếp trên khung AI.
+- **Invisible Mode (No UI Overhead)**: Loại bỏ hoàn toàn lớp phủ trạng thái (Overlay) trong IDE UI để đảm bảo không còn bất kỳ khung nào che khuất AI Chat Antigravity/Cursor. ✅
+- **Engine v16.0 Ignition**: Tối ưu hóa hiệu năng quét ngầm sạch sẽ và Broad Element Selection cực nhạy. ✅
 ### Changed
 - Phục hồi nhà phát hành (Publisher) về `txa-team` theo yêu cầu người dùng.
 - Cập nhật đồng bộ link tải và ID tiện ích trên toàn bộ Dashboard và tài liệu.
