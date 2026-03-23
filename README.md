@@ -1,6 +1,6 @@
-# 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium v7.2.3
+# 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium v7.3.0-preview
 
-[![Version](https://img.shields.io/badge/version-7.2.3-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-7.3.0--preview-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=22d3ee&style=for-the-badge)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-a78bfa.svg?style=for-the-badge)](LICENSE)
 
@@ -17,7 +17,12 @@
 <a name="english"></a>
 # 🇺🇸 Premium English Version
 
-**TXA Auto Accept v7.1.0** represents the pinnacle of VS Code automation. It’s an elite extension engineered to handle tedious AI confirmation dialogs, perform context-aware auto-clicks, and provide a high-security firewall (Guardian Shield) to protect your professional workflow.
+**TXA Auto Accept v7.3.0-preview** represents the pinnacle of VS Code automation. It’s an elite extension engineered to handle tedious AI confirmation dialogs, perform context-aware auto-clicks, and provide a high-security firewall (Guardian Shield) to protect your professional workflow.
+
+### 🆕 Release Preview Features
+- **Safety Guard**: Automatically blocks destructive clicks like "Delete", "Reset", or "Force Push".
+- **Ghost Click Preview**: A 600ms visual pulse effect before the actual click for maximum confidence.
+- **Enhanced AI Targeting**: Deeply integrated for **Antigravity**, **Cline**, and **Cursor**.
 
 ## 🌊 The Liquid Glass 2026 Experience
 
@@ -59,7 +64,12 @@ A smart, non-intrusive **Status Overlay** follows your AI panels perfectly. Powe
 <a name="tiếng-viet"></a>
 # 🇻🇳 Phiên bản Cao cấp (Tiếng Việt)
 
-**TXA Auto Accept v7.1.0** là đỉnh cao của tự động hóa trên VS Code. Một siêu trình mở rộng (Premium Extension) được chế tác để xử lý mọi hộp thoại xác nhận AI gây phiền toái, thực thi click thông minh và bảo vệ toàn diện tiến trình làm việc của bạn bằng hệ thống tường lửa **Guardian Shield**.
+**TXA Auto Accept v7.3.0-preview** là đỉnh cao của tự động hóa trên VS Code. Một siêu trình mở rộng (Premium Extension) được chế tác để xử lý mọi hộp thoại xác nhận AI gây phiền toái, thực thi click thông minh và bảo vệ toàn diện tiến trình làm việc của bạn bằng hệ thống tường lửa **Guardian Shield**.
+
+### 🆕 Tính năng bản Release Preview:
+- **Safety Guard (Chốt an toàn)**: Tự động nhận diện và chặn các lệnh xóa, reset hoặc force push nguy hiểm.
+- **Ghost Click Preview**: Hiệu ứng "chuột ma" xung điện 600ms trước khi click thật để bạn kịp quan sát.
+- **Tối ưu AI Assistant**: Thiết kế riêng cho **Antigravity**, **Cline** và **Cursor**.
 
 ## 🌊 Trải nghiệm Liquid Glass 2026
 

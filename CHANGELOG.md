@@ -4,6 +4,14 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.0-preview] — 2026-03-24
+### Added
+- **Safety Guard (Chốt an toàn)**: Tự động chặn các nút nguy hiểm như "Delete", "Reset" hoặc "Force Push".
+- **Ghost Click Preview**: Hiệu ứng "chuột ma" xung điện 600ms trước khi thực hiện cú click thật.
+- **Aurora Overlay 2026 Premium**: Giao diện lớp phủ được nâng cấp với hiệu ứng Aurora và kính mờ (Glassmorphism) rực rỡ.
+- **Improved AI Targeting**: Tối ưu bộ Selector cho mọi AI Assistant (Cline, Roo Code, Antigravity, Cursor).
+- **Release Preview Branding**: Gắn tag và cập nhật giao diện Dashboard cho phiên bản xem trước.
+
 ## [7.2.3] — 2026-03-24
 ### Changed
 - Phục hồi nhà phát hành (Publisher) về `txa-team` theo yêu cầu người dùng.

@@ -12,8 +12,11 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
             <div class="brand">
                 <div class="logo-wrapper">${LOGO_SVG}</div>
                 <div class="brand-text">
-                    <h1>${t.title}</h1>
-                    <span>v7.2.3 · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <h1>${t.title}</h1>
+                        <span style="background:linear-gradient(90deg, #f43f5e, #a855f7);color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:800;letter-spacing:1px;box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3)">RELEASE PREVIEW</span>
+                    </div>
+                    <span>v7.3.0-preview · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
                 </div>
             </div>
             <div class="nav-tabs">

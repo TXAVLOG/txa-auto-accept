@@ -51,6 +51,9 @@
         return results;
     };
 
+    const GHOST_CLICK_DELAY = 600;
+    const DESTRUCTIVE_TEXTS = ['delete', 'remove', 'force', 'reset', 'drop', 'terminate', 'purge', 'destroy', 'dangerous'];
+
     // --- Selectors ---
     const TAB_SELECTORS = {
         cursor: [
@@ -58,7 +61,12 @@
             '.monaco-pane-view .monaco-list-row[role="listitem"]',
             'div[role="tablist"] div[role="tab"]'
         ],
-        antigravity: ['button.grow', '.chat-session-item']
+        antigravity: [
+            'button.grow',
+            '.chat-session-item',
+            '[aria-label*="conversation"]',
+            '[class*="agent-session"]'
+        ]
     };
 
     const ACCEPT_SELECTORS = [
@@ -66,11 +74,14 @@
         '.monaco-button.monaco-text-button',
         'button.bg-primary',
         'button.rounded-l',
-        '[class*="button-primary"]'
+        '[class*="button-primary"]',
+        '[class*="accept-btn"]',
+        'button:not([disabled]):contains("Accept")',
+        'button:not([disabled]):contains("Apply")'
     ];
 
-    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow'];
-    const DENY_TEXTS = ['skip', 'reject', 'cancel', 'close', 'refine'];
+    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow', 'approve', 'install', 'yes'];
+    const DENY_TEXTS = ['skip', 'reject', 'cancel', 'close', 'refine', 'never'];
 
     // --- UI Helpers ---
     function ensureOverlay() {
@@ -81,21 +92,22 @@
             overlay.style.cssText = `
                 position: fixed; z-index: 2147483647; pointer-events: none;
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
-                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                background: rgba(10, 10, 20, 0.85); backdrop-filter: blur(20px);
-                border: 1px solid rgba(168, 85, 247, 0.3); box-shadow: 0 0 50px rgba(0,0,0,0.5);
-                opacity: 0; color: #fff; font-family: system-ui, sans-serif; overflow: hidden;
+                transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+                background: linear-gradient(135deg, rgba(15, 15, 30, 0.85), rgba(30, 20, 50, 0.75));
+                backdrop-filter: blur(25px); border: 1px solid rgba(168, 85, 247, 0.4);
+                box-shadow: 0 0 60px rgba(168, 85, 247, 0.15);
+                opacity: 0; color: #fff; font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
+                border-radius: 0;
             `;
             
             const content = document.createElement('div');
             content.id = OVERLAY_ID + '_content';
-            content.style.padding = '20px';
+            content.style.padding = '25px';
             content.style.textAlign = 'center';
             overlay.appendChild(content);
             
             document.body.appendChild(overlay);
 
-            // Sync with AI Panel
             const sync = () => {
                 const panel = queryAll('#antigravity\\.agentPanel, #workbench\\.parts\\.auxiliarybar, .auxiliary-bar-container').find(p => p.offsetWidth > 50);
                 if (panel) {
@@ -118,6 +130,33 @@
         }
     }
 
+    function createGhostEffect(btn) {
+        const rect = btn.getBoundingClientRect();
+        const ghost = document.createElement('div');
+        ghost.style.cssText = `
+            position: fixed; top: ${rect.top}px; left: ${rect.left}px;
+            width: ${rect.width}px; height: ${rect.height}px;
+            border: 2px solid #22d3ee; border-radius: 4px;
+            pointer-events: none; z-index: 2147483646;
+            animation: txa-ghost-pulse 0.6s ease-out forwards;
+        `;
+        
+        if (!document.getElementById('txa-ghost-style')) {
+            const s = document.createElement('style');
+            s.id = 'txa-ghost-style';
+            s.innerHTML = `
+                @keyframes txa-ghost-pulse {
+                    0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); }
+                    100% { transform: scale(1.1); opacity: 0; box-shadow: 0 0 20px 10px rgba(34, 211, 238, 0); }
+                }
+            `;
+            document.head.appendChild(s);
+        }
+        
+        document.body.appendChild(ghost);
+        setTimeout(() => ghost.remove(), 700);
+    }
+
     function updateOverlayUI() {
         const content = document.getElementById(OVERLAY_ID + '_content');
         if (!content) return;
@@ -125,10 +164,11 @@
         const bg = s.config.backgroundMode;
         
         content.innerHTML = `
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 12px; color: ${bg ? '#a855f7' : '#22d3ee'}">
-                ${bg ? '🟣 BACKGROUND MODE ACTIVE' : '🔵 ENGINE ACTIVE'}
+            <div style="font-weight: 800; font-size: 11px; letter-spacing: 2px; margin-bottom: 2px; color: rgba(255,255,255,0.4)">RELEASE PREVIEW</div>
+            <div style="font-weight: 900; font-size: 15px; margin-bottom: 12px; color: ${bg ? '#a855f7' : '#22d3ee'}; text-shadow: 0 0 15px ${bg ? 'rgba(168, 85, 247, 0.5)' : 'rgba(34, 211, 238, 0.5)'}">
+                ${bg ? '🟣 HYBRID ENGINE' : '🔵 SMART SCANNER'}
             </div>
-            ${bg ? `<div style="font-size: 11px; opacity: 0.7; margin-bottom: 15px">Cycling ${s.tabNames.length} tabs...</div>` : ''}
+            ${bg ? `<div style="font-size: 11px; opacity: 0.7; margin-bottom: 15px">Monitoring ${s.tabNames.length} active sessions</div>` : ''}
             <div id="${OVERLAY_ID}_tabs" style="width: 100%; display: flex; flex-direction: column; gap: 8px"></div>
         `;
 
@@ -138,19 +178,19 @@
                 const active = i === (s.tabIndex % s.tabNames.length);
                 const item = document.createElement('div');
                 item.style.cssText = `
-                    font-size:11px; padding:6px 10px; border-radius:6px;
-                    background: ${active ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.03)'};
-                    border: 1px solid ${active ? '#a855f7' : 'rgba(255,255,255,0.1)'};
-                    text-align: left; transition: all 0.3s;
+                    font-size:10px; padding:8px 12px; border-radius:8px;
+                    background: ${active ? 'rgba(168, 85, 247, 0.25)' : 'rgba(255,255,255,0.03)'};
+                    border: 1px solid ${active ? '#a855f7' : 'rgba(255,255,255,0.08)'};
+                    text-align: left; transition: all 0.3s; color: ${active ? '#fff' : 'rgba(255,255,255,0.6)'};
                 `;
-                item.innerText = (active ? '👉 ' : '') + name;
+                item.innerText = (active ? '⚡ ' : '○ ') + name;
                 list.appendChild(item);
             });
         }
     }
 
     // --- Core Loops ---
-    function performClick() {
+    async function performClick() {
         const s = window.__txaState;
         if (!s.isRunning || s.userInteracting) return;
 
@@ -164,17 +204,40 @@
                 const txt = (b.textContent || '').trim().toLowerCase();
                 if (txt.length === 0 || txt.length > 50) continue;
                 
-                // Validate text patterns
+                // 1. Safety Guard Check
+                const isDestructive = DESTRUCTIVE_TEXTS.some(p => txt.includes(p));
+                if (isDestructive) {
+                    if (!b.__txa_warned) {
+                        log(`Safety Guard Blocked Destructive Action: "${txt}"`);
+                        b.__txa_warned = true;
+                        window.postMessage({ type: 'txa-action', action: 'den', details: `Safety Guard: ${txt}` }, '*');
+                    }
+                    continue;
+                }
+
+                // 2. Accept Validation
                 const isAccept = ACCEPT_TEXTS.some(p => txt.includes(p));
                 const isDeny = DENY_TEXTS.some(p => txt.includes(p));
                 
                 if (isAccept && !isDeny) {
                     const rect = b.getBoundingClientRect();
                     if (rect.width > 0 && rect.height > 0) {
-                        log(`Clicking: "${txt}"`);
-                        b.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
-                        window.postMessage({ type: 'txa-action', action: 'acc' }, '*');
-                        return; // Click one at a time for safety
+                        if (b.__txa_clicking) return;
+                        b.__txa_clicking = true;
+
+                        // 3. Ghost Click Preview
+                        log(`Ghost Preview: "${txt}"`);
+                        createGhostEffect(b);
+                        
+                        // Wait for preview
+                        await new Promise(r => setTimeout(r, GHOST_CLICK_DELAY));
+
+                        if (s.isRunning && !s.userInteracting) {
+                            log(`Final Click: "${txt}"`);
+                            b.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
+                            window.postMessage({ type: 'txa-action', action: 'acc', btn: txt }, '*');
+                        }
+                        return; 
                     }
                 }
             }
@@ -182,7 +245,7 @@
     }
 
     async function tabCyclingLoop(sid) {
-        log('Starting Tab Cycling Loop...');
+        log('Starting Hybrid Pulse Loop...');
         const s = window.__txaState;
         
         while (s.isRunning && s.sessionID === sid && s.config.backgroundMode) {
@@ -200,13 +263,12 @@
 
             if (tabs.length > 0) {
                 const target = tabs[s.tabIndex % tabs.length];
-                log(`Transitioning to tab: "${s.tabNames[s.tabIndex % tabs.length]}"`);
+                log(`Transition: "${s.tabNames[s.tabIndex % tabs.length]}"`);
                 target.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
                 s.tabIndex++;
             }
 
-            // Wait 3 seconds to let content load and clicking loop do its work
-            await new Promise(r => setTimeout(r, 3000));
+            await new Promise(r => setTimeout(r, 4000));
         }
     }
 
