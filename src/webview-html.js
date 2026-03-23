@@ -39,23 +39,29 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
         <div class="panel active" id="panel-monitor">
             <div class="stats">
                 <div class="stat-card acc" data-tip="${t.accepted}">
-                    <div class="stat-val stat-acc" id="val-acc">${state.clicks}</div>
-                    <div class="stat-lbl">${t.accepted}</div>
+                    <div class="stat-val stat-acc" id="val-acc" style="font-size:2rem">${state.clicks}</div>
+                    <div class="stat-lbl" style="font-size:.6rem">Accepted</div>
                 </div>
-                <div class="stat-card den" data-tip="Time Saved (Min) / Thời gian tiết kiệm">
-                    <div class="stat-val stat-den" id="val-time-saved" style="color:var(--accent);text-shadow:0 0 30px var(--accent-glow)">0</div>
-                    <div class="stat-lbl">Time Saved (Min)</div>
+                <div class="stat-card den" data-tip="${t.blocked}">
+                    <div class="stat-val stat-den" id="val-den" style="font-size:2rem">${state.denied}</div>
+                    <div class="stat-lbl" style="font-size:.6rem">Shield (✗)</div>
+                </div>
+                <div class="stat-card roi" data-tip="Time Saved (Min) / Thời gian tiết kiệm" style="border-color:var(--accent-glow)">
+                    <div class="stat-val" id="val-time-saved" style="font-size:2rem;color:var(--accent);text-shadow:0 0 20px var(--accent-glow)">0</div>
+                    <div class="stat-lbl" style="font-size:.6rem">ROI (Min)</div>
                 </div>
             </div>
 
-            <div class="stats" style="grid-template-columns: 1fr; margin-top: -1rem; margin-bottom: 2rem">
-                <div class="stat-card" style="padding: 1rem; flex-direction: row; gap: 1rem; justify-content: space-between">
-                    <div style="display: flex; flex-direction: column; align-items: flex-start">
-                        <div class="stat-lbl" style="font-size: 0.65rem; color: var(--text-muted)">Weekly Clicks</div>
-                        <div id="val-weekly-clicks" style="font-size: 1.25rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--text-main)">${state.weeklyClicks || 0}</div>
+            <div class="stats" style="grid-template-columns: 1fr; margin-top: -0.8rem; margin-bottom: 2rem">
+                <div class="stat-card" style="padding: 0.8rem 1.2rem; flex-direction: row; gap: 1rem; justify-content: space-between; background: rgba(167, 139, 250, 0.03)">
+                    <div style="display: flex; gap: 1.5rem">
+                        <div style="display: flex; flex-direction: column; align-items: flex-start">
+                            <div class="stat-lbl" style="font-size: 0.6rem; color: var(--text-muted)">Weekly Clicks</div>
+                            <div id="val-weekly-clicks" style="font-size: 1rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--text-main)">${state.weeklyClicks || 0}</div>
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 12px">
-                        <div class="stat-lbl" style="font-size: 0.72rem">Background Mode</div>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                        <div class="stat-lbl" style="font-size: 0.65rem">Background Mode</div>
                         <label class="switch"><input type="checkbox" id="btn-toggle-background" ${state.backgroundMode ? 'checked' : ''}><span class="slider"></span></label>
                     </div>
                 </div>

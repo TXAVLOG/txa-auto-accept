@@ -78,7 +78,7 @@ function activate(context) {
         
         updateROI();
 
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.backgroundMode ? '$(globe)' : ''}${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗ ${state.backgroundMode ? '$(globe)' : ''}${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
         
         // Màu sắc linh hoạt: Xanh khi chạy, Đỏ khi tắt, Tím khi Background Mode
         if (!autoClick) {

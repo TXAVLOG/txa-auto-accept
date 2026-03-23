@@ -65,8 +65,9 @@ body{
 header{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--glass-border);position:relative;z-index:2}
 .brand{display:flex;align-items:center;gap:1rem}
 .logo-wrapper{
-    width:52px;height:52px;border-radius:16px;
-    background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(167,139,250,0.15));
+    width:64px;height:64px;border-radius:20px;
+    flex-shrink:0; /* Chống bị co bóp */
+    background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(167,139,250,0.2));
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 0 30px rgba(99,102,241,0.2),inset 0 0 20px rgba(255,255,255,0.05);
     border:1px solid rgba(255,255,255,0.1);
@@ -86,8 +87,8 @@ header{padding:1.5rem 2rem;display:flex;justify-content:space-between;align-item
 .panel{display:none;padding:2rem;animation:fadePanel .45s cubic-bezier(.16,1,.3,1);min-height:460px;position:relative;z-index:2}
 .panel.active{display:block}
 @keyframes fadePanel{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem}
-.stat-card{background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);padding:1.8rem 1.2rem;border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .4s cubic-bezier(.175,.885,.32,1.275);position:relative;overflow:hidden;cursor:default}
+.stats{display:grid;grid-template-columns:100px 100px 1fr;gap:0.8rem;margin-bottom:1.5rem}
+.stat-card{background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);padding:1.4rem 0.5rem;border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .4s cubic-bezier(.175,.885,.32,1.275);position:relative;overflow:hidden;cursor:default}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:inherit;opacity:0;transition:opacity .4s}
 .stat-card.acc::before{background:radial-gradient(circle at 50% 0%,rgba(34,211,238,0.12),transparent 70%)}
 .stat-card.den::before{background:radial-gradient(circle at 50% 0%,rgba(244,63,94,0.12),transparent 70%)}

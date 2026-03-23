@@ -147,6 +147,15 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
                     
                     playSound('accepted');
                 }
+
+                if (state.denied !== msg.denied) {
+                    const denEl = document.getElementById('val-den');
+                    if (denEl) {
+                        denEl.innerText = msg.denied;
+                        denEl.classList.remove('changed'); void denEl.offsetWidth; denEl.classList.add('changed');
+                    }
+                    playSound('blocked');
+                }
                 
                 if (weeklyEl && msg.weeklyClicks !== undefined) {
                     weeklyEl.innerText = msg.weeklyClicks;
