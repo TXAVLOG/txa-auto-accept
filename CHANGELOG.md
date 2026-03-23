@@ -4,7 +4,7 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
-## [7.3.3-preview] — 2026-03-24
+## [7.3.4] — 2026-03-24
 ### Added
 - **Non-intrusive Overlay (Footer Pill)**: Thu nhỏ lớp phủ trạng thái thành dạng thanh điều hướng dưới cùng, không còn che khuất khung Chat AI Antigravity. ✅
 - **Hybrid Engine v15.0 Ignition**: Mở rộng bộ lọc phần tử cực nhạy. Tự động nhận diện nút qua `aria-label`, `title` và Text nội dung. Hỗ trợ 100% các nút Icon nhỏ. ✅

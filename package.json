@@ -2,7 +2,7 @@
   "name": "txa-auto-accept",
   "displayName": "TXA Auto Accept",
   "description": "Auto Accept Engine with CDP DOM Click \u2014 t\u1ef1 \u0111\u1ed9ng click Run/Accept trong IDE UI. Liquid Glass 2026 Dashboard.",
-  "version": "7.3.3-preview",
+  "version": "7.3.4",
   "icon": "icon.png",
   "publisher": "txa-team",
   "author": "TXA Team",
@@ -35,24 +35,32 @@
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other",
-    "Keymaps",
-    "Formatters"
+    "AI",
+    "Chat",
+    "Machine Learning",
+    "Other"
   ],
   "keywords": [
     "auto accept",
-    "auto click",
-    "security",
-    "shield",
-    "deny list",
-    "glassmorphism",
+    "auto run",
+    "cursor ai",
+    "antigravity ai",
+    "hybrid engine",
+    "ai agent automation",
+    "dom clicker",
+    "terminal monitor",
+    "ghost click",
     "liquid glass",
-    "dashboard",
-    "terminal protection",
-    "aurora ui"
+    "roi tracking",
+    "productivity tool"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:go",
+    "onLanguage:rust"
   ],
   "main": "./extension.js",
   "contributes": {
