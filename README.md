@@ -1,4 +1,4 @@
-# 🛡️ TXA Auto Accept — Liquid Glass 2026 Premium
+# 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium
 
 [![Version](https://img.shields.io/badge/version-7.1.0-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=22d3ee&style=for-the-badge)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
@@ -8,101 +8,85 @@
 
 ---
 
-<a name="english"></a>
-# 🇺🇸 English Version
+<p align="center">
+  <strong>"The Invisible Bodyguard for Modern AI Coding Experience."</strong>
+</p>
 
-**TXA Auto Accept** is a premium VS Code extension. It automates the acceptance of tedious dialogs, performs intelligent auto-clicks, and features a robust Security Shield to protect your editor from destructive commands.
+---
+
+<a name="english"></a>
+# 🇺🇸 Premium English Version
+
+**TXA Auto Accept v7.1.0** represents the pinnacle of VS Code automation. It’s an elite extension engineered to handle tedious AI confirmation dialogs, perform context-aware auto-clicks, and provide a high-security firewall (Guardian Shield) to protect your professional workflow.
 
 ## 🌊 The Liquid Glass 2026 Experience
 
-**TXA Auto Accept** is not just a tool; it's digital art for your VS Code. It combines standard **Glassmorphism** aesthetics with top-tier automation performance.
+**TXA Auto Accept** is digital art integrated into your editor. It bridges the gap between surreal **Glassmorphism** aesthetics and top-tier industrial performance.
 
-### 🌌 Fluid UI
-Immerse yourself in a surreal **Liquid Glass** Dashboard. Ultra-thin glass borders, deep 3D shadows, and floating **Aurora Particles** provide endless inspiration for your code.
+### 🌌 Hybrid Liquid UI
+The Dashboard features an ultra-realistic **Liquid Glass** effect with sub-pixel glass borders, deep 3D shadows, and floating **Aurora Particles** that evolve as you work.
 
-### 🛡️ Guard Shield
-Ultimate security with **60+ Preloaded Protection Rules**. Stops Terminal disasters like `rm -rf`, `format`, reverse shells, and data leaks. The AI Engine monitors 24/7 to keep your system safe.
+### 🔄 Intelligent Tab Cycling (Background Mode)
+The industry's first **CDP-based Background Engine**. TXA doesn't just watch your current screen; it intelligently cycles through your active AI chat tabs (Cursor/Antigravity), allowing you to process multiple AI agents simultaneously while you focus on deep work.
 
-### 🎯 Precision Target Lock
-Metadata-based **Target Lock** mechanism. Analyzes DOM structure and automatically clicks any CSS Selector you specify. Free your hands from repetitive confirmation dialogs.
+### ⏱️ ROI Analytics Engine
+Real-time **Time Saved** counter. TXA tracks every click handled and calculates exactly how many minutes of manual interaction you’ve saved this week. Turn automation into measurable efficiency.
 
-### 📉 Threat Meter
-Real-time risk measurement radar. Evaluates danger levels from **LOW**, **MEDIUM** to **HIGH** (Red Alert). The **Survival Uptime** counter tracks how long the Engine has been protecting you.
+### 🛡️ Guardian Shield — Multi-Layer Protection
+Ultimate security with **60+ Pre-populated Security Rules**. Blocks terminal disasters: `rm -rf`, destructive formats, reverse shells, and unauthorized data exfiltration. The AI-driven Threat Radar alerts you before disaster strikes.
 
-### 🧠 Smart Sync
-Intelligent **Auto-Pause** typing sensor. Automatically pauses the Engine while you are typing to avoid behavioral conflicts, ensuring your workflow remains smooth and seamless.
-
-### ⚡ Zero-Lag Performance
-Harnesses the power of **Node.js Workers** to optimize background processes. Guaranteed 0ms UI latency. Once installed, TXA silently protects you like an "invisible bodyguard."
+### 🧬 Responsive Visual Overlay
+A smart, non-intrusive **Status Overlay** follows your AI panels perfectly. Powered by `ResizeObserver`, it stays fixed to your sidebar even as you resize your IDE, providing a sleek Purple (Background) or Cyan (Active) glow.
 
 ---
 
-## 🚀 Installation & Deployment
+## 🚀 Deployment & Usage
 
-### 🌐 Method 1: Extension Panel (Recommended)
-1. Open VS Code → press `Ctrl+Shift+X`.
-2. Search for: `TXA Auto Accept` or use `@id:txa-team.txa-auto-accept`.
-3. Click **Install**. It will auto-update!
+### ⚙️ Quick Start
+1. **Toggle Engine**: `Alt + A` or use the **Liquid Glass Switch** in the Dashboard.
+2. **Background Mode**: Flip the **Globe** icon/switch in the Monitor tab to start automatic tab-cycling across all AI sessions.
+3. **Smart Config**: Set your custom CSS selectors for specialized AI buttons.
 
-### 📦 Method 2: VSIX Setup (Offline)
-1. Download the latest `.vsix` from [GitHub Releases](https://github.com/TXAVLOG/txa-auto-accept/releases).
-2. Open VS Code → **Extensions** (`Ctrl+Shift+X`).
-3. Click the `...` menu → **Install from VSIX...** → select the file.
-
----
-
-## 🛠️ Usage Guide
-
-Once installed, the Engine runs in the background. To interact:
-
-*   **Open UI**: Press `Alt+Shift+A` or click the **Shield (🛡️)** icon in the Status Bar.
-*   **💻 MONITOR Tab**: Real-time dashboard with Threat Radar, Block Counter, and Activity Logs.
-*   **⚙️ CONFIG Tab**: Set scan intervals, Change Language (English/Vietnamese), and Advanced CSS Selectors.
-*   **🛡️ SHIELD Tab**: Manage your Deny-List. Block specific npm commands or dangerous scripts. Quick suggestions for 60+ commands included.
-*   **🎯 Element Picker**: Use the Target 🎯 button to automatically capture Class/ID of any element globally in the IDE.
+### ⌨️ Elite Hotkeys
+| Command | Action | Keymap |
+| :--- | :--- | :---: |
+| **Reveal Dashboard** | Open the Liquid Glass Console | `Alt + Shift + A` |
+| **Trigger Engine** | Enable/Disable Automation | `Alt + A` |
+| **Nuke Counters** | Reset ROI and Activity Logs | `Alt + R` |
 
 ---
 
 <a name="tiếng-viet"></a>
-# 🇻🇳 Tiếng Việt
+# 🇻🇳 Phiên bản Cao cấp (Tiếng Việt)
 
-**TXA Auto Accept** là siêu trình mở rộng (Premium Extension) dành cho VS Code. Tự động hóa quá trình chấp nhận các hộp thoại khó chịu, click tự động thông minh, kết hợp cùng là một hệ thống Security Shield tường lửa vững chắc nhằm bảo vệ Editor của bạn khỏi mọi câu lệnh phá hoại.
+**TXA Auto Accept v7.1.0** là đỉnh cao của tự động hóa trên VS Code. Một siêu trình mở rộng (Premium Extension) được chế tác để xử lý mọi hộp thoại xác nhận AI gây phiền toái, thực thi click thông minh và bảo vệ toàn diện tiến trình làm việc của bạn bằng hệ thống tường lửa **Guardian Shield**.
 
 ## 🌊 Trải nghiệm Liquid Glass 2026
 
-### 🌌 Giao diện Thuần Khiết (Fluid UI)
-Đắm chìm trong Dashboard **Kính trong suốt** siêu thực. Viền kính siêu mỏng, hiệu ứng đổ bóng 3D có chiều sâu phối hợp hoàn mỹ cùng hệ thống **Aurora Particles** lơ lửng.
+### 🔄 Trí tuệ tự xoay Tab (Background Mode)
+Lần đầu tiên trên thị trường, công cụ hỗ trợ **Background Engine** cho trình duyệt nhúng của IDE. TXA không chỉ nhìn một chỗ; nó tự động luân chuyển (Cycle) giữa các Tab chat AI (Cursor/Antigravity), giúp bạn chạy 3-4 Agent cùng lúc mà không cần chạm tay vào máy.
 
-### 🛡️ Tàn phá Tường lửa (Guard Shield)
-Lá chắn bảo mật tối thượng với **60+ Quy luật bảo vệ** được nạp sẵn. Chặn đứng mọi thảm họa Terminal: `rm -rf`, `format`, mã độc đảo ngược shell...
+### ⏱️ Động cơ Thống kê ROI
+Công cụ đo lường hiệu suất thực tế. TXA đếm từng cú click và tính toán chính xác số phút bạn đã tiết kiệm được trong tuần qua. Định nghĩa lại khái niệm "Tự động hóa là năng suất thực".
 
-### 🎯 Khóa Mục tiêu (Precision Target)
-Cơ chế **Target Lock** siêu dữ liệu. Phân tích cấu trúc DOM thông minh và tự động thực thi click chính xác vào bất cứ CSS Selector nào bạn chỉ định.
+### 🛡️ Guardian Shield — Tường lửa Đa lớp
+Lá chắn bảo mật tối thượng với **60+ quy tắc nạp sẵn**. Ngăn chặn mọi thảm họa Terminal: `rm -rf`, `format`, mã độc đảo ngược shell (`reverse-shell`)... Hệ thống **Threat Radar** sẽ cảnh báo mức độ nguy hiểm từ THẤP đến CAO.
 
-### 📉 Radar Đe dọa (Threat Meter)
-Hệ thống ra-đa đo lường rủi ro thời gian thực. Đánh giá độ nguy hiểm từ **THẤP**, **TRUNG BÌNH** đến **CAO**. Bộ đếm **Uptime sinh tồn** ghi dấu thời gian bảo vệ.
-
----
-
-## 🚀 Hướng dẫn Cài đặt
-
-1. Mở VS Code → nhấn `Ctrl+Shift+X`.
-2. Gõ tìm kiếm: `TXA Auto Accept`.
-3. Nhấn **Install** — xong! 
+### 🧬 Lớp phủ Visual Overlay Tương thích
+Lớp phủ trạng thái thông minh nhất hiện nay, tự động "bám dính" và co dãn (Responsive) theo đúng Panel của IDE. Bạn không bao giờ phải lo lắng về việc giao diện bị nhòe hay lệch khỏi khung chat AI.
 
 ---
 
-## ⌨️ Hotkeys / Phím tắt
+## 🛠️ Hướng dẫn Sử dụng Đúng cách
 
-| Keymap | Weapon | Description |
-| :---: | :--- | :--- |
-| `Alt + Shift + A` | **Liquid Glass UI** | Open/Reveal the Dashboard. |
-| `Alt + A` | **Trigger Engine** | Enable / Disable Auto-Accept instantly. |
-| `Alt + R` | **Nuke State** | Clear logs and reset counters to zero. |
+1. **Bật Engine**: Sử dụng phím tắt `Alt + A`. Thanh Status Bar sẽ chuyển sang màu Cyan (Xanh) rực rỡ.
+2. **Kích hoạt Background**: Gạt nút **Globe/Quả cầu** trong Tab Monitor. TXA sẽ bắt đầu tự xoay tab để tìm lệnh chờ.
+3. **Theo dõi ROI**: Mở Dashboard (`Alt + Shift + A`) để xem thời gian bạn đã "chiến thắng" được từ sự lặp lại vô nghĩa.
+4. **Tùy biến Selector**: Sử dụng nút **🎯 Pick Element** để khóa mục tiêu vào bất kỳ nút bấm nào bạn muốn tự động click.
 
 ---
 
 <p align="center">
 <br/>
-© 2026 Crafted by the <strong>TXA Team</strong> Universe.<br/>Free for all under the permanent <b>MIT License</b>.
+© 2026 Crafted with ❤️ by the <strong>TXA Team</strong> Global.<br/>Standardize your automation workflow with <b>MIT License</b>.
 </p>
