@@ -4,6 +4,10 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.1-preview] — 2026-03-24
+### Fixed
+- **Hotfix**: Sửa lỗi `relauncher.checkCDP is not a function` gây treo Engine khi khởi động.
+
 ## [7.3.0-preview] — 2026-03-24
 ### Added
 - **Safety Guard (Chốt an toàn)**: Tự động chặn các nút nguy hiểm như "Delete", "Reset" hoặc "Force Push".

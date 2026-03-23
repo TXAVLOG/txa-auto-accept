@@ -3,6 +3,7 @@ const { execSync, spawn } = require('child_process');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 
 const CDP_PORT = 9000;
 const CDP_FLAG = `--remote-debugging-port=${CDP_PORT}`;
@@ -17,6 +18,17 @@ class Relauncher {
         this.platform = os.platform();
         this.logger = logger;
         this.t = t;
+    }
+
+    async checkCDP() {
+        return new Promise((resolve) => {
+            const req = http.get({ hostname: '127.0.0.1', port: CDP_PORT, path: '/json/list', timeout: 500 }, (res) => {
+                resolve(true);
+                res.resume();
+            });
+            req.on('error', () => resolve(false));
+            req.on('timeout', () => { req.destroy(); resolve(false); });
+        });
     }
 
     log(msg) {
