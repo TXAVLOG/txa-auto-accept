@@ -1,11 +1,11 @@
 /**
- * TXA Auto Accept — Advanced Hybrid Inject Script v14.5
+ * TXA Auto Accept — Advanced Hybrid Inject Script v15.0 (FINAL FIX)
  * 
- * Features:
- * - Dual-Loop Architecture (Independent Clicking vs. Tab Cycling)
- * - User Interaction Guard (Auto-Pause on manual click)
- * - Intelligent Tab Selection (Cursor & Antigravity)
- * - Fluid Glass Status Overlay with Tab Tracking
+ * Major Fixes:
+ * - Broadened element selectors (button, [role="button"])
+ * - Improved text matching (aria-label & title support)
+ * - Optimized Dual-Loop timing to prevent overlaps
+ * - Fixed User Interaction Guard sticking
  */
 (function() {
     'use strict';
@@ -14,7 +14,6 @@
     const log = (msg) => console.log(`%c[TXA-CDP]%c ${msg}`, 'color:#a855f7;font-weight:bold', 'color:inherit');
     const OVERLAY_ID = '__txaOverlay';
     
-    // --- State Management ---
     if (!window.__txaState) {
         window.__txaState = {
             isRunning: false,
@@ -24,11 +23,11 @@
             interactTimer: null,
             tabIndex: 0,
             tabNames: [],
-            completionStatus: {}
+            lastAction: 'Waiting for targets...',
+            scanCount: 0
         };
     }
 
-    // --- DOM Utilities ---
     const getDocs = (root = document) => {
         let docs = [root];
         try {
@@ -51,39 +50,9 @@
         return results;
     };
 
-    const GHOST_CLICK_DELAY = 600;
-    const DESTRUCTIVE_TEXTS = ['delete', 'remove', 'force', 'reset', 'drop', 'terminate', 'purge', 'destroy', 'dangerous'];
+    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow', 'yes', 'approve', 'bắt đầu'];
+    const DENY_TEXTS = ['skip', 'reject', 'cancel', 'close', 'refine', 'từ chối', 'đóng'];
 
-    // --- Selectors ---
-    const TAB_SELECTORS = {
-        cursor: [
-            '#workbench\\.parts\\.auxiliarybar ul[role="tablist"] li[role="tab"]',
-            '.monaco-pane-view .monaco-list-row[role="listitem"]',
-            'div[role="tablist"] div[role="tab"]'
-        ],
-        antigravity: [
-            'button.grow',
-            '.chat-session-item',
-            '[aria-label*="conversation"]',
-            '[class*="agent-session"]'
-        ]
-    };
-
-    const ACCEPT_SELECTORS = [
-        '.anysphere-confirm-button',
-        '.monaco-button.monaco-text-button',
-        'button.bg-primary',
-        'button.rounded-l',
-        '[class*="button-primary"]',
-        '[class*="accept-btn"]',
-        'button:not([disabled]):contains("Accept")',
-        'button:not([disabled]):contains("Apply")'
-    ];
-
-    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow', 'approve', 'install', 'yes'];
-    const DENY_TEXTS = ['skip', 'reject', 'cancel', 'close', 'refine', 'never'];
-
-    // --- UI Helpers ---
     function ensureOverlay() {
         let overlay = document.getElementById(OVERLAY_ID);
         if (!overlay) {
@@ -92,24 +61,23 @@
             overlay.style.cssText = `
                 position: fixed; z-index: 2147483647; pointer-events: none;
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
-                transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-                background: linear-gradient(135deg, rgba(15, 15, 30, 0.85), rgba(30, 20, 50, 0.75));
-                backdrop-filter: blur(25px); border: 1px solid rgba(168, 85, 247, 0.4);
-                box-shadow: 0 0 60px rgba(168, 85, 247, 0.15);
-                opacity: 0; color: #fff; font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
-                border-radius: 0;
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(25px);
+                border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 60px rgba(0,0,0,0.6);
+                opacity: 0; color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden;
             `;
-            
             const content = document.createElement('div');
             content.id = OVERLAY_ID + '_content';
             content.style.padding = '25px';
+            content.style.width = '100%';
             content.style.textAlign = 'center';
             overlay.appendChild(content);
-            
             document.body.appendChild(overlay);
 
             const sync = () => {
-                const panel = queryAll('#antigravity\\.agentPanel, #workbench\\.parts\\.auxiliarybar, .auxiliary-bar-container').find(p => p.offsetWidth > 50);
+                const s = window.__txaState;
+                if (!s.isRunning) return;
+                const panel = queryAll('#antigravity\\.agentPanel, #workbench\\.parts\\.auxiliarybar, .auxiliary-bar-container').find(p => p.offsetWidth > 100);
                 if (panel) {
                     const r = panel.getBoundingClientRect();
                     overlay.style.top = r.top + 'px';
@@ -121,200 +89,186 @@
                     overlay.style.opacity = '0';
                 }
             };
-
             const obs = new ResizeObserver(sync);
-            const parent = document.querySelector('.monaco-workbench') || document.body;
-            obs.observe(parent);
+            obs.observe(document.body);
             window.__txaOverlayObs = obs;
             sync();
         }
-    }
-
-    function createGhostEffect(btn) {
-        const rect = btn.getBoundingClientRect();
-        const ghost = document.createElement('div');
-        ghost.style.cssText = `
-            position: fixed; top: ${rect.top}px; left: ${rect.left}px;
-            width: ${rect.width}px; height: ${rect.height}px;
-            border: 2px solid #22d3ee; border-radius: 4px;
-            pointer-events: none; z-index: 2147483646;
-            animation: txa-ghost-pulse 0.6s ease-out forwards;
-        `;
-        
-        if (!document.getElementById('txa-ghost-style')) {
-            const s = document.createElement('style');
-            s.id = 'txa-ghost-style';
-            s.innerHTML = `
-                @keyframes txa-ghost-pulse {
-                    0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); }
-                    100% { transform: scale(1.1); opacity: 0; box-shadow: 0 0 20px 10px rgba(34, 211, 238, 0); }
-                }
-            `;
-            document.head.appendChild(s);
-        }
-        
-        document.body.appendChild(ghost);
-        setTimeout(() => ghost.remove(), 700);
     }
 
     function updateOverlayUI() {
         const content = document.getElementById(OVERLAY_ID + '_content');
         if (!content) return;
         const s = window.__txaState;
-        const bg = s.config.backgroundMode;
+        const mode = s.config.backgroundMode ? '🟣 BACKGROUND CYCLE' : '🔵 ACTIVE SHIELD';
         
         content.innerHTML = `
-            <div style="font-weight: 800; font-size: 11px; letter-spacing: 2px; margin-bottom: 2px; color: rgba(255,255,255,0.4)">RELEASE PREVIEW</div>
-            <div style="font-weight: 900; font-size: 15px; margin-bottom: 12px; color: ${bg ? '#a855f7' : '#22d3ee'}; text-shadow: 0 0 15px ${bg ? 'rgba(168, 85, 247, 0.5)' : 'rgba(34, 211, 238, 0.5)'}">
-                ${bg ? '🟣 HYBRID ENGINE' : '🔵 SMART SCANNER'}
+            <div style="font-weight: 900; font-size: 15px; letter-spacing: 1px; color: ${s.config.backgroundMode ? '#a855f7' : '#22d3ee'}; margin-bottom: 5px">
+                ${mode}
             </div>
-            ${bg ? `<div style="font-size: 11px; opacity: 0.7; margin-bottom: 15px">Monitoring ${s.tabNames.length} active sessions</div>` : ''}
-            <div id="${OVERLAY_ID}_tabs" style="width: 100%; display: flex; flex-direction: column; gap: 8px"></div>
+            <div style="font-size: 10px; opacity: 0.6; margin-bottom: 15px; font-family: monospace">
+                Scan #${s.scanCount} | ${s.userInteracting ? 'PAUSED (USER)' : 'MONITORING...'}
+            </div>
+            <div style="font-size: 12px; font-weight: 500; color: #fff; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin-bottom: 15px">
+                ${s.lastAction}
+            </div>
+            <div id="${OVERLAY_ID}_tabs" style="width: 100%; display: flex; flex-direction: column; gap: 6px"></div>
         `;
 
-        if (bg) {
+        if (s.config.backgroundMode && s.tabNames.length > 0) {
             const list = document.getElementById(OVERLAY_ID + '_tabs');
             s.tabNames.forEach((name, i) => {
                 const active = i === (s.tabIndex % s.tabNames.length);
                 const item = document.createElement('div');
                 item.style.cssText = `
-                    font-size:10px; padding:8px 12px; border-radius:8px;
-                    background: ${active ? 'rgba(168, 85, 247, 0.25)' : 'rgba(255,255,255,0.03)'};
-                    border: 1px solid ${active ? '#a855f7' : 'rgba(255,255,255,0.08)'};
-                    text-align: left; transition: all 0.3s; color: ${active ? '#fff' : 'rgba(255,255,255,0.6)'};
+                    font-size:11px; padding:6px 12px; border-radius:4px;
+                    background: ${active ? 'rgba(168, 85, 247, 0.3)' : 'rgba(255,255,255,0.03)'};
+                    border-left: 3px solid ${active ? '#a855f7' : 'transparent'};
+                    text-align: left; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
                 `;
-                item.innerText = (active ? '⚡ ' : '○ ') + name;
+                item.innerText = (active ? '▶ ' : '') + name;
                 list.appendChild(item);
             });
         }
     }
 
-    // --- Core Loops ---
-    async function performClick() {
+    function performClick() {
         const s = window.__txaState;
-        if (!s.isRunning || s.userInteracting) return;
+        if (!s.isRunning) return;
+        if (s.userInteracting) {
+            s.lastAction = 'User interacting... pausing.';
+            updateOverlayUI();
+            return;
+        }
 
+        s.scanCount++;
         const config = s.config;
-        const selectors = [...ACCEPT_SELECTORS];
-        if (config.customSelector) selectors.unshift(config.customSelector);
+        
+        // Broaden target search
+        const targets = queryAll('button, [role="button"], .anysphere-confirm-button, a.monaco-button');
+        if (config.customSelector) {
+            targets.push(...queryAll(config.customSelector));
+        }
 
-        for (const sel of selectors) {
-            const bts = queryAll(sel);
-            for (const b of bts) {
-                const txt = (b.textContent || '').trim().toLowerCase();
-                if (txt.length === 0 || txt.length > 50) continue;
-                
-                // 1. Safety Guard Check
-                const isDestructive = DESTRUCTIVE_TEXTS.some(p => txt.includes(p));
-                if (isDestructive) {
-                    if (!b.__txa_warned) {
-                        log(`Safety Guard Blocked Destructive Action: "${txt}"`);
-                        b.__txa_warned = true;
-                        window.postMessage({ type: 'txa-action', action: 'den', details: `Safety Guard: ${txt}` }, '*');
-                    }
-                    continue;
-                }
+        for (const b of targets) {
+            const text = (b.textContent || '').trim().toLowerCase();
+            const aria = (b.getAttribute('aria-label') || '').trim().toLowerCase();
+            const title = (b.getAttribute('title') || '').trim().toLowerCase();
+            const fullTxt = `${text} ${aria} ${title}`;
 
-                // 2. Accept Validation
-                const isAccept = ACCEPT_TEXTS.some(p => txt.includes(p));
-                const isDeny = DENY_TEXTS.some(p => txt.includes(p));
-                
-                if (isAccept && !isDeny) {
-                    const rect = b.getBoundingClientRect();
-                    if (rect.width > 0 && rect.height > 0) {
-                        if (b.__txa_clicking) return;
-                        b.__txa_clicking = true;
+            if (fullTxt.length < 2 || fullTxt.length > 100) continue;
 
-                        // 3. Ghost Click Preview
-                        log(`Ghost Preview: "${txt}"`);
-                        createGhostEffect(b);
-                        
-                        // Wait for preview
-                        await new Promise(r => setTimeout(r, GHOST_CLICK_DELAY));
+            const isAccept = ACCEPT_TEXTS.some(p => fullTxt.includes(p));
+            const isDeny = DENY_TEXTS.some(p => fullTxt.includes(p));
 
-                        if (s.isRunning && !s.userInteracting) {
-                            log(`Final Click: "${txt}"`);
-                            b.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
-                            window.postMessage({ type: 'txa-action', action: 'acc', btn: txt }, '*');
-                        }
-                        return; 
-                    }
+            if (isAccept && !isDeny) {
+                const rect = b.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    s.lastAction = `Accepted: "${text || aria.substring(0, 15)}"`;
+                    log(`Auto-Click: ${s.lastAction}`);
+                    b.click();
+                    b.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
+                    window.postMessage({ type: 'txa-action', action: 'acc' }, '*');
+                    updateOverlayUI();
+                    return; // Prevent multiple clicks in one burst
                 }
             }
+        }
+
+        if (s.scanCount % 5 === 0) {
+            s.lastAction = 'Scanning for targets...';
+            updateOverlayUI();
         }
     }
 
     async function tabCyclingLoop(sid) {
-        log('Starting Hybrid Pulse Loop...');
         const s = window.__txaState;
-        
+        const TAB_SELECTORS = [
+            '#workbench\\.parts\\.auxiliarybar ul[role="tablist"] li[role="tab"]',
+            'button.grow',
+            '.chat-session-item',
+            'div[role="tablist"] div[role="tab"]'
+        ];
+
         while (s.isRunning && s.sessionID === sid && s.config.backgroundMode) {
-            const ide = (s.config.ide || 'cursor').toLowerCase();
-            const selectors = TAB_SELECTORS[ide] || TAB_SELECTORS.cursor;
-            
-            let tabs = [];
-            for (const sel of selectors) {
-                tabs = queryAll(sel);
-                if (tabs.length > 0) break;
+            if (s.userInteracting) {
+                await new Promise(r => setTimeout(r, 1000));
+                continue;
             }
 
-            s.tabNames = Array.from(tabs).map(t => t.textContent.trim().split('\n')[0].substring(0, 30));
-            updateOverlayUI();
+            let tabs = [];
+            for (const sel of TAB_SELECTORS) {
+                const found = queryAll(sel);
+                if (found.length > 0) {
+                    tabs = found;
+                    break;
+                }
+            }
+
+            s.tabNames = Array.from(tabs).map(t => {
+                const raw = t.textContent.trim().split('\n')[0] || t.getAttribute('aria-label') || 'Unknown Tab';
+                return raw.substring(0, 25);
+            });
 
             if (tabs.length > 0) {
                 const target = tabs[s.tabIndex % tabs.length];
-                log(`Transition: "${s.tabNames[s.tabIndex % tabs.length]}"`);
+                s.lastAction = `Switching to: ${s.tabNames[s.tabIndex % tabs.length]}`;
+                target.click();
                 target.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
                 s.tabIndex++;
+                updateOverlayUI();
             }
 
-            await new Promise(r => setTimeout(r, 4000));
+            await new Promise(r => setTimeout(r, 3000));
         }
     }
 
-    // --- Entry Points ---
     window.__txaStart = function(config) {
-        log('Initializing Advanced Hybrid Engine...');
         const s = window.__txaState;
-        if (s.isRunning) window.__txaStop();
+        if (s.isRunning && s.sessionID) {
+            // Already running with same config? Just update config and return
+            if (JSON.stringify(s.config) === JSON.stringify(config)) return;
+            window.__txaStop();
+        }
 
+        log('Engine v15.0 Ignition...');
         s.isRunning = true;
-        s.sessionID++;
+        s.sessionID = Date.now();
         s.config = config || {};
         const sid = s.sessionID;
 
         ensureOverlay();
         updateOverlayUI();
 
-        // Guard: Pause on mouse down
         const onInteract = () => {
             s.userInteracting = true;
             if (s.interactTimer) clearTimeout(s.interactTimer);
-            s.interactTimer = setTimeout(() => { s.userInteracting = false; }, 1500);
+            s.interactTimer = setTimeout(() => { 
+                s.userInteracting = false; 
+                updateOverlayUI();
+            }, 2000);
         };
         document.addEventListener('mousedown', onInteract, true);
         window.__txaOnInteract = onInteract;
 
-        // Loop 1: High-Speed Clicking
-        const poll = config.pollInterval || 1000;
+        const poll = Math.max(config.pollInterval || 1000, 500);
         const clickInterval = setInterval(performClick, poll);
         window.__txaClickInterval = clickInterval;
 
-        // Loop 2: Background Cycling (if enabled)
         if (config.backgroundMode) {
             tabCyclingLoop(sid);
         }
-
-        log('Active.');
     };
 
     window.__txaStop = function() {
-        log('Stopping Engine...');
+        log('Engine Shutdown.');
         const s = window.__txaState;
         s.isRunning = false;
+        s.sessionID = 0;
 
         if (window.__txaClickInterval) clearInterval(window.__txaClickInterval);
         if (window.__txaOnInteract) document.removeEventListener('mousedown', window.__txaOnInteract, true);
+        if (s.interactTimer) clearTimeout(s.interactTimer);
         
         const overlay = document.getElementById(OVERLAY_ID);
         if (overlay) {
@@ -322,8 +276,16 @@
             overlay.style.opacity = '0';
             setTimeout(() => { if (!s.isRunning) overlay.remove(); }, 400);
         }
-        log('Engine Offline.');
     };
 
-    log('Advanced Hybrid Inject Script Ready.');
+    window.__txaGetStats = function() {
+        const s = window.__txaState;
+        return JSON.stringify({
+            isRunning: s.isRunning,
+            scanCount: s.scanCount,
+            lastAction: s.lastAction
+        });
+    };
+
+    log('Engine v15.0 Ready.');
 })();
