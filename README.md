@@ -1,6 +1,6 @@
 # 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium
 
-[![Version](https://img.shields.io/badge/version-7.1.0-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-7.2.0-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=22d3ee&style=for-the-badge)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-a78bfa.svg?style=for-the-badge)](LICENSE)
 

@@ -21,7 +21,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.1.0';
+    const VERSION = 'v7.2.0';
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
 
     // ── AUDIO ────────────────────────────────────────────────────────────────
@@ -167,11 +167,13 @@ function activate(context) {
     // ── BUILD CDP CONFIG ──────────────────────────────────────────────────────
     function buildCDPConfig() {
         const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        const ide = (vscode.env.appName || '').toLowerCase().includes('antigravity') ? 'antigravity' : 'cursor';
         return {
             pollInterval: cfg.get('scanInterval', 1000),
             bannedList: (state.denyList || []).map(r => r.pattern),
             customSelector: cfg.get('customSelector', ''),
-            backgroundMode: state.backgroundMode
+            backgroundMode: state.backgroundMode,
+            ide: ide
         };
     }
 
