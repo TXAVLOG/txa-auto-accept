@@ -46,6 +46,10 @@ module.exports = {
         { label: 'git push -f', pattern: '/\\bgit\\s+push\\s+.*--force\\b/i' },
         { label: 'git reset hard', pattern: '/\\bgit\\s+reset\\s+--hard\\b/i' },
         { label: 'git clean -f', pattern: '/\\bgit\\s+clean\\s+-[a-z]*f/i' },
+        { label: 'git checkout', pattern: '/\\bgit\\s+checkout\\b/i' },
+        { label: 'git branch', pattern: '/\\bgit\\s+branch\\b/i' },
+        { label: 'git merge', pattern: '/\\bgit\\s+merge\\b/i' },
+        { label: 'git rebase', pattern: '/\\bgit\\s+rebase\\b/i' },
     ],
     LOGO_SVG: `<svg width="44" height="44" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>

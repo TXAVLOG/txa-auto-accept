@@ -4,6 +4,11 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.4.5] — 2026-03-25
+### Added
+- **Git Protection Shield Boost**: Thêm `git checkout`, `git branch`, `git merge`, `git rebase` vào danh sách chặn mặc định (BUILTIN_DENY). ✅
+- **Accidental Click Prevention**: Ngăn chặn triệt để việc tự động bấm vào các nút chuyển nhánh hoặc hợp nhất code trong IDE.
+
 ## [7.4.4] — 2026-03-25
 ### Added
 - **CDP Relauncher Robustness (v16.3)**: Sửa lỗi script PowerShell (Array/Count) khi cài đặt CDP trên Windows. ✅
