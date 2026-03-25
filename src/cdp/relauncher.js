@@ -13,11 +13,18 @@ const CDP_FLAG = `--remote-debugging-port=${CDP_PORT}`;
  * Runs PowerShell/bash scripts silently without user intervention
  * NOTE: Auto-restart removed. Users must restart the IDE manually.
  */
+const { SetupPanel } = require('./setup-panel');
+
+/**
+ * Relauncher - Automatically configures CDP for the IDE
+ * Runs PowerShell/bash scripts silently or shows setup panel
+ */
 class Relauncher {
-    constructor(logger = console.log, t) {
+    constructor(logger = console.log, t, context) {
         this.platform = os.platform();
         this.logger = logger;
         this.t = t;
+        this.context = context;
     }
 
     async checkCDP() {
@@ -46,7 +53,7 @@ class Relauncher {
      * Show a toast notification prompting the user to manually restart the IDE.
      */
     _showRestartRequiredToast(ideName, detail) {
-        const message = this.t.restartRequired.replace(/\{0\}/g, ideName);
+        const message = (this.t.restartRequired || 'Vui lòng khởi động lại {0} để áp dụng thay đổi.').replace(/\{0\}/g, ideName);
         vscode.window.showWarningMessage(
             detail ? `${message}\n\n${detail}` : message,
             { modal: false },
@@ -56,8 +63,7 @@ class Relauncher {
     }
 
     /**
-     * Main entry point: ensures CDP is enabled and prompts user to restart manually.
-     * No automatic restart — user must close and reopen the IDE themselves.
+     * Main entry point
      */
     async ensureCDPAndRelaunch() {
         this.log('Checking if current process has CDP flag...');
@@ -67,26 +73,68 @@ class Relauncher {
         if (hasFlag) {
             this.log('CDP flag present but port inactive. Prompting user to restart manually.');
             vscode.window.showWarningMessage(
-                this.t.cdpFlagPresent.replace(/\{0\}/g, ideName),
+                (this.t.cdpFlagPresent || 'CDP Engine đã được bật nhưng cổng kết nối đang bận. Vui lòng đóng toàn bộ {0} và mở lại.').replace(/\{0\}/g, ideName),
                 { modal: false },
                 'OK'
             );
             return { success: true, relaunched: false };
         }
 
-        this.log('CDP flag missing. Running automatic CDP setup...');
-
-        // Run the appropriate platform script AUTOMATICALLY
-        try {
-            await this.runCDPSetupAutomatically(ideName);
-            return { success: true, relaunched: false };
-        } catch (err) {
-            this.log(`Auto CDP setup failed: ${err.message}`);
-            vscode.window.showErrorMessage(
-                this.t.cdpSetupFailed.replace('{0}', err.message).replace('{1}', ideName)
-            );
-            return { success: false, relaunched: false };
+        this.log('CDP flag missing. Showing setup panel...');
+        const script = await this.getPlatformScript();
+        
+        if (this.context) {
+            SetupPanel.createOrShow(this.context.extensionUri, script, this.platform, ideName, this.t);
         }
+
+        return { success: true, relaunched: false };
+    }
+
+    async getPlatformScript() {
+        const ideName = this.getIdeName();
+        if (this.platform === 'win32') {
+            return `# TXA CDP Setup Script for ${ideName}
+$WshShell = New-Object -ComObject WScript.Shell
+$searchLocations = @(
+    [Environment]::GetFolderPath('Desktop'),
+    "$env:USERPROFILE\\Desktop",
+    "$env:USERPROFILE\\OneDrive\\Desktop",
+    "$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs",
+    "$env:ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
+    "$env:USERPROFILE\\AppData\\Roaming\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar"
+)
+$foundShortcuts = @()
+foreach ($location in $searchLocations) {
+    if (Test-Path $location) {
+        $shortcuts = Get-ChildItem -Path $location -Recurse -Filter "*.lnk" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like "*${ideName}*" }
+        $foundShortcuts += $shortcuts
+    }
+}
+if ($foundShortcuts.Count -eq 0) {
+    $exePath = "$env:LOCALAPPDATA\\Programs\\${ideName}\\${ideName}.exe"
+    if (Test-Path $exePath) {
+        $shortcutPath = "$([Environment]::GetFolderPath('Desktop'))\\${ideName}.lnk"
+        $shortcut = $WshShell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = $exePath
+        $shortcut.Arguments = "--remote-debugging-port=9000"
+        $shortcut.Save()
+    }
+} else {
+    foreach ($shortcutFile in $foundShortcuts) {
+        $shortcut = $WshShell.CreateShortcut($shortcutFile.FullName)
+        if ($shortcut.Arguments -match "--remote-debugging-port=\\d+") {
+            $shortcut.Arguments = $shortcut.Arguments -replace "--remote-debugging-port=\\d+", "--remote-debugging-port=9000"
+        } else {
+            $shortcut.Arguments = "--remote-debugging-port=9000 " + $shortcut.Arguments
+        }
+        $shortcut.Save()
+    }
+}
+Write-Host "Cài đặt hoàn tất! Vui lòng khởi động lại ${ideName}."`;
+        }
+        // ... (can add mac/linux scripts similarly if needed)
+        return "";
     }
 
     /**

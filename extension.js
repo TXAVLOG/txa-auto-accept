@@ -152,7 +152,7 @@ function activate(context) {
 
     async function startCDPEngine() {
         if (!cdpHandler) cdpHandler = new CDPHandler();
-        if (!relauncher) relauncher = new Relauncher();
+        if (!relauncher) relauncher = new Relauncher(log, t, context);
 
         relauncher.checkCDP().then(async (available) => {
             if (!available) {

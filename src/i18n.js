@@ -76,7 +76,8 @@ module.exports = {
         cdpWritingScript: "Đang ghi script thiết lập...",
         cdpConfiguringShortcuts: "Đang cấu hình shortcut...",
         cdpDoneRestart: "Xong! Vui lòng khởi động lại thủ công.",
-        cdpShortcutUpdated: "Shortcut đã được cập nhật với --remote-debugging-port=9000."
+        cdpShortcutUpdated: "Shortcut đã được cập nhật với --remote-debugging-port=9000.",
+        scriptCopied: "Đã copy Script vào bộ nhớ tạm!"
     },
     en: {
         title: "TXA AUTO ACCEPT",
@@ -155,6 +156,7 @@ module.exports = {
         cdpWritingScript: "Writing setup script...",
         cdpConfiguringShortcuts: "Configuring shortcuts...",
         cdpDoneRestart: "Done! Please restart manually.",
-        cdpShortcutUpdated: "Shortcuts have been updated with --remote-debugging-port=9000."
+        cdpShortcutUpdated: "Shortcuts have been updated with --remote-debugging-port=9000.",
+        scriptCopied: "Script copied to clipboard!"
     }
 };
