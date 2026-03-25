@@ -4,6 +4,15 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.6] — 2026-03-25
+### Added
+- **Backup & Restore (Sao lưu)**: Thêm chức năng Xuất và Nhập toàn bộ quy tắc (Rules) bảo vệ từ file JSON. ✅
+- **Success Notifications**: Bổ sung thông báo "✅ Đã lưu cấu hình thành công!" khi người dùng bấm nút Save. ✅
+### Fixed
+- **CDP Connectivity Awareness**: Cải thiện hiển thị trên thanh trạng thái, báo `$(plug) OFF` màu vàng khi Engine bị ngắt kết nối trong khi tự động click vẫn bật. ✅
+- **Engine Version Sync**: Đồng bộ hóa phiên bản v7.3.6 trên toàn bộ extension, Dashboard và tài liệu. ✅
+- **VS Code Engine update**: Nâng cấp yêu cầu phiên bản VS Code tối thiểu lên `^1.85.0`. ✅
+
 ## [7.3.5] — 2026-03-24
 ### Added
 - **Invisible Mode (No UI Overhead)**: Loại bỏ hoàn toàn lớp phủ trạng thái (Overlay) trong IDE UI để đảm bảo không còn bất kỳ khung nào che khuất AI Chat Antigravity/Cursor. ✅
