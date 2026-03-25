@@ -4,6 +4,13 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.4.3] — 2026-03-25
+### Added
+- **Ultra-Precise AI Command Detection (v16.2)**: Tối ưu bộ chọn cho các nút "Run" trong khung viền AI (`bg-primary`). ✅
+- **Robust Click Simulation**: Thêm sự kiện `mousedown` và `mouseup` để tương thích hoàn toàn với các Framework UI hiện đại. 
+- **Event Reporting Fix**: Sửa lỗi không hiển thị chi tiết "Target" và "Btn" trong nhật ký Dashboard. ✅
+- **Shortcut Awareness**: Nhận diện thông minh các phím tắt (Alt+, Enter) hiển thị trên nút bấm.
+
 ## [7.4.2] — 2026-03-25
 ### Fixed
 - **Version Synchronization**: Đồng bộ toàn bộ version 7.4.2 trên tất cả các file nguồn. 

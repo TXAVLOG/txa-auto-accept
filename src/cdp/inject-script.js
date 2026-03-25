@@ -22,7 +22,9 @@
             tabIndex: 0,
             tabNames: [],
             lastAction: 'Waiting for targets...',
-            scanCount: 0
+            scanCount: 0,
+            clicks: 0,
+            events: []
         };
     }
 
@@ -48,7 +50,7 @@
         return results;
     };
 
-    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow', 'yes', 'approve', 'bắt đầu'];
+    const ACCEPT_TEXTS = ['accept', 'run', 'retry', 'apply', 'execute', 'confirm', 'allow', 'yes', 'approve', 'bắt đầu', 'alt+', 'enter'];
     const DENY_TEXTS = ['skip', 'reject', 'cancel', 'close', 'refine', 'từ chối', 'đóng'];
 
     function performClick() {
@@ -58,13 +60,25 @@
         s.scanCount++;
         const config = s.config;
         
-        // Broad target search (v15.0 Brain)
-        const targets = queryAll('button, [role="button"], .anysphere-confirm-button, a.monaco-button');
+        // High-Precision AI Command Selector (v16.2 Premium Engine)
+        // Targets primary buttons in AI-style containers
+        const targets = queryAll('button.bg-primary, button[class*="bg-primary"], .anysphere-confirm-button, a.monaco-button.monaco-text-button');
+        
+        // Broad target search (fallback)
+        if (targets.length === 0) {
+            targets.push(...queryAll('button, [role="button"], .cursor-button'));
+        }
+
         if (config.customSelector) {
             targets.push(...queryAll(config.customSelector));
         }
 
         for (const b of targets) {
+            // Priority Check: Skip buttons in standard toolbars/sidebars to avoid "clicking the wrong Run button"
+            if (b.closest('.monaco-workbench .part.sidebar, .monaco-workbench .part.activitybar, .monaco-workbench .part.editor .title')) {
+                continue; 
+            }
+
             const text = (b.textContent || '').trim().toLowerCase();
             const aria = (b.getAttribute('aria-label') || '').trim().toLowerCase();
             const title = (b.getAttribute('title') || '').trim().toLowerCase();
@@ -72,16 +86,36 @@
 
             if (fullTxt.length < 2 || fullTxt.length > 100) continue;
 
+            // Refined Matching logic
             const isAccept = ACCEPT_TEXTS.some(p => fullTxt.includes(p));
             const isDeny = DENY_TEXTS.some(p => fullTxt.includes(p));
 
             if (isAccept && !isDeny) {
                 const rect = b.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0) {
-                    s.lastAction = `Accepted: "${text || aria.substring(0, 15)}"`;
+                    // Logic check for AI Container (Liquid Intelligence)
+                    const isInAIContainer = !!b.closest('div[class*="border-gray-500/25"], .chat-session, .ai-chat-panel');
+                    const isPrimary = b.classList.contains('bg-primary') || b.className.includes('bg-primary');
+                    
+                    // Prioritize: If we're not in an AI container and see other buttons, maybe be more careful?
+                    // But if it IS a primary button with "Run" text, it's very likely our target.
+                    
+                    s.clicks++;
+                    s.events.push({ btn: text || aria || 'Button', cmd: fullTxt.substring(0, 100) });
+                    s.lastAction = `Accepted: "${text.split('\n')[0] || aria.substring(0, 15)}"`;
                     log(`Auto-Click: ${s.lastAction}`);
+                    
+                    // Advanced Click Simulation (v16.2 Robust)
+                    const opts = { bubbles: true, cancelable: true, view: window };
+                    b.dispatchEvent(new MouseEvent('mousedown', opts));
+                    b.dispatchEvent(new MouseEvent('mouseup', opts));
+                    
+                    // Focus if possible
+                    if (typeof b.focus === 'function') b.focus();
+                    
                     b.click();
-                    b.dispatchEvent(new MouseEvent('click', { bubbles: true, view: window }));
+                    b.dispatchEvent(new MouseEvent('click', opts));
+                    
                     window.postMessage({ type: 'txa-action', action: 'acc' }, '*');
                     return; 
                 }
@@ -137,7 +171,7 @@
             window.__txaStop();
         }
 
-        log('Engine v16.0 Ignition (Clean Mode)...');
+        log('Engine v16.1 Ignition (Safe Mode)...');
         s.isRunning = true;
         s.sessionID = Date.now();
         s.config = config || {};
@@ -173,11 +207,14 @@
 
     window.__txaGetStats = function() {
         const s = window.__txaState;
-        return JSON.stringify({
+        const res = {
             isRunning: s.isRunning,
-            scanCount: s.scanCount,
+            clicks: s.clicks,
+            events: [...s.events],
             lastAction: s.lastAction
-        });
+        };
+        s.events = []; // Consume events to avoid double counting
+        return JSON.stringify(res);
     };
 
     log('Engine v16.0 Ready (Clean Mode).');
