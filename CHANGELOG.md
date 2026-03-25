@@ -4,6 +4,12 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.7] — 2026-03-25
+### Added
+- **PowerShell Shortcut Fixer**: Tích hợp logic sửa Shortcut mạnh mẽ từ MunKhin Agent.
+- **CDP Setup Panel**: Giao diện hướng dẫn cài đặt CDP trực quan khi Engine không khả dụng. ✅
+- **Auto-Relauncher Fix**: Sửa lỗi khởi tạo Relauncher khiến tính năng tự động tìm shortcut không hoạt động. ✅
+
 ## [7.3.6] — 2026-03-25
 ### Added
 - **Backup & Restore (Sao lưu)**: Thêm chức năng Xuất và Nhập toàn bộ quy tắc (Rules) bảo vệ từ file JSON. ✅
