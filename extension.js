@@ -29,7 +29,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.4.0';
+    const VERSION = 'v7.4.1';
     outputChannel = vscode.window.createOutputChannel("TXA Auto Accept");
     context.subscriptions.push(outputChannel);
 
@@ -353,6 +353,11 @@ function activate(context) {
         context.globalState.update('clicks', 0); context.globalState.update('denied', 0);
         context.globalState.update('uptime', 0); context.globalState.update('log', []);
         updateStatusBar();
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.setupCDP', () => {
+        if (!relauncher) relauncher = new Relauncher(log, t, context);
+        relauncher.ensureCDPAndRelaunch();
     }));
 
     // ── CONFIG WATCHER ─────────────────────────────────────────────────────────
