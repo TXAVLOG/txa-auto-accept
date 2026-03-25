@@ -4,11 +4,13 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
-## [7.3.8] — 2026-03-25
-### Fixed
-- **Activation Error**: Giải quyết lỗi ReferenceError khi thiếu hàm log lúc khởi tạo Relauncher. ✅
+## [7.4.0] — 2026-03-25
+### Added
+- **Command Management**: Bổ sung lệnh `toggleBackground` vào Command Palette.
+- **Scope Fix**: Di chuyển hàm log ra phạm vi toàn cục để tránh lỗi ReferenceError khi khởi động. ✅
+- **Stablity Build**: Bản dựng ổn định nhất phục vụ anh em TXA Team.
 
-## [7.3.7] — 2026-03-25
+## [7.3.8] — 2026-03-25
 ### Added
 - **PowerShell Shortcut Fixer**: Tích hợp logic sửa Shortcut mạnh mẽ từ MunKhin Agent.
 - **CDP Setup Panel**: Giao diện hướng dẫn cài đặt CDP trực quan khi Engine không khả dụng. ✅
