@@ -4,6 +4,15 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.4.2] — 2026-03-25
+### Fixed
+- **Version Synchronization**: Đồng bộ toàn bộ version 7.4.2 trên tất cả các file nguồn. 
+
+## [7.4.1] — 2026-03-25
+### Added
+- **Manual Setup CDP**: Thêm lệnh `Setup CDP Connection (Manual)` để xử lý triệt để các lỗi kết nối. ✅
+- **CDP Engine Fix**: Tăng độ nhạy khi nhận diện các nút có phím tắt (Alt+Enter).
+
 ## [7.4.0] — 2026-03-25
 ### Added
 - **Command Management**: Bổ sung lệnh `toggleBackground` vào Command Palette.
