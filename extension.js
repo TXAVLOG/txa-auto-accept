@@ -12,6 +12,14 @@ let activePanel = null;
 let cdpHandler = null;
 let cdpScanTimer = null;
 let relauncher = null;
+let outputChannel = null;
+
+function log(msg) {
+    if (outputChannel) {
+        outputChannel.appendLine(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    }
+    console.log(`[TXA] ${msg}`);
+}
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -21,14 +29,9 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.3.8';
-    const outputChannel = vscode.window.createOutputChannel("TXA Auto Accept");
+    const VERSION = 'v7.3.9';
+    outputChannel = vscode.window.createOutputChannel("TXA Auto Accept");
     context.subscriptions.push(outputChannel);
-
-    function log(msg) {
-        console.log(`[TXA] ${msg}`);
-        outputChannel.appendLine(`[${new Date().toLocaleTimeString()}] ${msg}`);
-    }
 
     log(t.startupMsg.replace('{0}', VERSION));
     vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
