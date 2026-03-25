@@ -74,17 +74,20 @@ function activate(context) {
         const cdpCount = cdpHandler ? cdpHandler.getConnectionCount() : 0;
         
         updateROI();
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗ ${state.backgroundMode ? '$(globe)' : ''}${cdpCount > 0 ? ` $(plug)${cdpCount}` : ''}`;
+        const cdpStatus = cdpCount > 0 ? ` $(plug)${cdpCount}` : (autoClick ? ' $(plug) OFF' : '');
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗ ${state.backgroundMode ? '$(globe)' : ''}${cdpStatus}`;
         
         if (!autoClick) {
             statusBarItem.color = '#f43f5e';
+        } else if (cdpCount === 0) {
+            statusBarItem.color = '#fbbf24'; // Warning if autoClick is on but CDP off
         } else if (state.backgroundMode) {
             statusBarItem.color = '#a78bfa';
         } else {
             statusBarItem.color = '#22d3ee';
         }
 
-        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${state.timeSavedMinutes} minutes saved\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : currentT.cdpNotConnected}`;
+        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${state.timeSavedMinutes} minutes saved\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : (autoClick ? currentT.cdpNotAvailable : currentT.cdpNotConnected)}`;
         statusBarItem.show();
 
         if (activePanel) {
@@ -235,11 +238,53 @@ function activate(context) {
             const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
             switch (message.command) {
                 case 'saveConfig':
-                    cfg.update('autoClick', message.autoClick, vscode.ConfigurationTarget.Global)
-                        .then(() => cfg.update('scanInterval', message.scanInterval, vscode.ConfigurationTarget.Global))
-                        .then(() => cfg.update('language', message.language, vscode.ConfigurationTarget.Global))
-                        .then(() => cfg.update('idleSeconds', message.idleSeconds, vscode.ConfigurationTarget.Global))
-                        .then(() => cfg.update('customSelector', message.customSelector, vscode.ConfigurationTarget.Global));
+                    Promise.all([
+                        cfg.update('autoClick', message.autoClick, vscode.ConfigurationTarget.Global),
+                        cfg.update('scanInterval', message.scanInterval, vscode.ConfigurationTarget.Global),
+                        cfg.update('language', message.language, vscode.ConfigurationTarget.Global),
+                        cfg.update('idleSeconds', message.idleSeconds, vscode.ConfigurationTarget.Global),
+                        cfg.update('customSelector', message.customSelector, vscode.ConfigurationTarget.Global)
+                    ]).then(() => {
+                        const currentT = i18n[message.language] || i18n.en;
+                        vscode.window.showInformationMessage(currentT.configSaved);
+                        updateStatusBar();
+                    }).catch(err => {
+                        vscode.window.showErrorMessage(`Error saving: ${err.message}`);
+                    });
+                    return;
+                case 'exportRules':
+                    vscode.window.showSaveDialog({
+                        filters: { 'JSON': ['json'] },
+                        defaultUri: vscode.Uri.file('txa-rules-backup.json')
+                    }).then(uri => {
+                        if (uri) {
+                            fs.writeFileSync(uri.fsPath, JSON.stringify(state.denyList, null, 2));
+                            const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                            vscode.window.showInformationMessage(currentT.configSaved); // Or export success msg
+                        }
+                    });
+                    return;
+                case 'importRules':
+                    vscode.window.showOpenDialog({
+                        canSelectHeaders: false, canSelectMany: false,
+                        filters: { 'JSON': ['json'] }
+                    }).then(uris => {
+                        if (uris && uris[0]) {
+                            try {
+                                const data = JSON.parse(fs.readFileSync(uris[0].fsPath, 'utf8'));
+                                if (Array.isArray(data)) {
+                                    state.denyList = data;
+                                    context.globalState.update('denyList', state.denyList);
+                                    if (cdpHandler) cdpHandler.updateConfig(buildCDPConfig()).catch(() => { });
+                                    updateStatusBar();
+                                    const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
+                                    vscode.window.showInformationMessage(currentT.shieldUpdated);
+                                }
+                            } catch (e) {
+                                vscode.window.showErrorMessage(`Invalid file format: ${e.message}`);
+                            }
+                        }
+                    });
                     return;
                 case 'startGlobalPick':
                     if (cdpHandler) {

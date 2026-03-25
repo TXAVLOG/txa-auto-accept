@@ -437,6 +437,13 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
             updateThreat();
         };
 
+        document.getElementById('btn-export-rules').onclick = () => {
+            vscode.postMessage({ command: 'exportRules' });
+        };
+        document.getElementById('btn-import-rules').onclick = () => {
+            vscode.postMessage({ command: 'importRules' });
+        };
+
         document.getElementById('btn-test-sound').onclick = () => playSound('accepted');
 
         // Init

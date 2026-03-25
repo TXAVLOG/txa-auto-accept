@@ -86,7 +86,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
 
             <div class="engine-status">
                 <span class="status-dot"></span>
-                <span id="status-text">${t.engineStatus} v7.2.3</span>
+                <span id="status-text">${t.engineStatus} v7.3.5</span>
             </div>
 
             <div class="action-row">
@@ -175,6 +175,16 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted);z-index:1"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <input type="text" id="shield-search" placeholder="${t.searchShield}" style="padding-left:2.5rem">
             </div>
+            <div class="action-row" style="margin-top: 10px; margin-bottom: 10px; display: flex; gap: 8px">
+                <button class="btn-action" id="btn-export-rules" data-tip="${t.exportRules}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    ${t.exportRules}
+                </button>
+                <button class="btn-action" id="btn-import-rules" data-tip="${t.importRules}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    ${t.importRules}
+                </button>
+            </div>
             <div class="deny-grid" id="deny-list"></div>
         </div>
 
@@ -182,7 +192,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
             <div class="about-panel">
                 <div class="about-logo">${LOGO_SVG}</div>
                 <div class="about-title">${t.title}</div>
-                <div class="about-version">v7.2.3 · Liquid Glass Engine 2026</div>
+                <div class="about-version">v7.3.5 · Liquid Glass Engine 2026</div>
                 <p class="about-desc">${t.aboutDesc}</p>
                 <div class="about-links">
                     <a href="#" class="about-link" id="link-github">
