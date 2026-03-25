@@ -4,6 +4,10 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.3.8] — 2026-03-25
+### Fixed
+- **Activation Error**: Giải quyết lỗi ReferenceError khi thiếu hàm log lúc khởi tạo Relauncher. ✅
+
 ## [7.3.7] — 2026-03-25
 ### Added
 - **PowerShell Shortcut Fixer**: Tích hợp logic sửa Shortcut mạnh mẽ từ MunKhin Agent.

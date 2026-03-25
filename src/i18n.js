@@ -1,7 +1,7 @@
 module.exports = {
     vi: {
         title: "TXA AUTO ACCEPT",
-        version: "v7.3.7",
+        version: "v7.3.8",
         monitor: "GIÁM SÁT",
         config: "CẤU HÌNH",
         shield: "LÁ CHẮN",
@@ -81,7 +81,7 @@ module.exports = {
     },
     en: {
         title: "TXA AUTO ACCEPT",
-        version: "v7.3.7",
+        version: "v7.3.8",
         monitor: "MONITOR",
         config: "CONFIG",
         shield: "SHIELD",
