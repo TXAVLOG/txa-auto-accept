@@ -93,44 +93,51 @@ class Relauncher {
     async getPlatformScript() {
         const ideName = this.getIdeName();
         if (this.platform === 'win32') {
-            return `# TXA CDP Setup Script for ${ideName}
+            return `# TXA CDP Setup Script for ${ideName} (Robust v16.3)
+$ErrorActionPreference = "SilentlyContinue"
 $WshShell = New-Object -ComObject WScript.Shell
 $searchLocations = @(
     [Environment]::GetFolderPath('Desktop'),
     "$env:USERPROFILE\\Desktop",
-    "$env:USERPROFILE\\OneDrive\\Desktop",
     "$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs",
     "$env:ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
     "$env:USERPROFILE\\AppData\\Roaming\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar"
 )
-$foundShortcuts = @()
+[Array]$foundShortcuts = @()
 foreach ($location in $searchLocations) {
     if (Test-Path $location) {
-        $shortcuts = Get-ChildItem -Path $location -Recurse -Filter "*.lnk" -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like "*${ideName}*" }
-        $foundShortcuts += $shortcuts
+        $shortcuts = Get-ChildItem -Path $location -Filter "*.lnk" | Where-Object { $_.Name -like "*${ideName}*" }
+        if ($shortcuts) { $foundShortcuts += $shortcuts }
     }
 }
-if ($foundShortcuts.Count -eq 0) {
+if (@($foundShortcuts).Count -eq 0) {
     $exePath = "$env:LOCALAPPDATA\\Programs\\${ideName}\\${ideName}.exe"
     if (Test-Path $exePath) {
         $shortcutPath = "$([Environment]::GetFolderPath('Desktop'))\\${ideName}.lnk"
-        $shortcut = $WshShell.CreateShortcut($shortcutPath)
-        $shortcut.TargetPath = $exePath
-        $shortcut.Arguments = "--remote-debugging-port=9000"
-        $shortcut.Save()
-    }
+        try {
+            $shortcut = $WshShell.CreateShortcut($shortcutPath)
+            $shortcut.TargetPath = $exePath
+            $shortcut.Arguments = "--remote-debugging-port=9000"
+            $shortcut.Save()
+            Write-Host "✅ Đã tạo shortcut mới trên Desktop."
+        } catch { Write-Host "❌ Không thể tạo shortcut: $($_.Exception.Message)" }
+    } else { Write-Host "❌ Không tìm thấy file thực thi của ${ideName}." }
 } else {
     foreach ($shortcutFile in $foundShortcuts) {
-        $shortcut = $WshShell.CreateShortcut($shortcutFile.FullName)
-        if ($shortcut.Arguments -match "--remote-debugging-port=\\d+") {
-            $shortcut.Arguments = $shortcut.Arguments -replace "--remote-debugging-port=\\d+", "--remote-debugging-port=9000"
-        } else {
-            $shortcut.Arguments = "--remote-debugging-port=9000 " + $shortcut.Arguments
-        }
-        $shortcut.Save()
+        try {
+            $shortcut = $WshShell.CreateShortcut($shortcutFile.FullName)
+            $args = $shortcut.Arguments
+            if ($args -match "--remote-debugging-port=\\d+") {
+                $shortcut.Arguments = $args -replace "--remote-debugging-port=\\d+", "--remote-debugging-port=9000"
+            } else {
+                $shortcut.Arguments = "--remote-debugging-port=9000 " + $args
+            }
+            $shortcut.Save()
+            Write-Host "✅ Đã cập nhật: $($shortcutFile.Name)"
+        } catch { Write-Host "⚠️ Lỗi khi lưu $($shortcutFile.Name): $($_.Exception.Message)" }
     }
 }
+Write-Host "------------------------------------------------"
 Write-Host "Cài đặt hoàn tất! Vui lòng khởi động lại ${ideName}."`;
         }
         // ... (can add mac/linux scripts similarly if needed)
@@ -163,55 +170,48 @@ Write-Host "Cài đặt hoàn tất! Vui lòng khởi động lại ${ideName}."
         const scriptPath = path.join(tmpDir, 'auto-accept-cdp-setup.ps1');
 
         const script = `
-# AUTO-ACCEPT-MSTRVN — Automatic CDP Setup
-# This script runs automatically — no user action needed
-
+# AUTO-ACCEPT-MSTRVN — Automatic CDP Setup (Robust v16.3)
 $ErrorActionPreference = "SilentlyContinue"
-
+$WshShell = New-Object -ComObject WScript.Shell
 $searchLocations = @(
     [Environment]::GetFolderPath('Desktop'),
     "$env:USERPROFILE\\Desktop",
-    "$env:USERPROFILE\\OneDrive\\Desktop",
     "$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs",
     "$env:ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
     "$env:USERPROFILE\\AppData\\Roaming\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar"
 )
-
-$WshShell = New-Object -ComObject WScript.Shell
-$foundShortcuts = @()
+[Array]$foundShortcuts = @()
 
 foreach ($location in $searchLocations) {
     if (Test-Path $location) {
-        $shortcuts = Get-ChildItem -Path $location -Recurse -Filter "*.lnk" -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like "*${ideName}*" }
-        $foundShortcuts += $shortcuts
+        $shortcuts = Get-ChildItem -Path $location -Filter "*.lnk" | Where-Object { $_.Name -like "*${ideName}*" }
+        if ($shortcuts) { $foundShortcuts += $shortcuts }
     }
 }
 
-if ($foundShortcuts.Count -eq 0) {
+if (@($foundShortcuts).Count -eq 0) {
     $exePath = "$env:LOCALAPPDATA\\Programs\\${ideName}\\${ideName}.exe"
-
     if (Test-Path $exePath) {
-        $desktopPath = [Environment]::GetFolderPath('Desktop')
-        $shortcutPath = "$desktopPath\\${ideName}.lnk"
-        $shortcut = $WshShell.CreateShortcut($shortcutPath)
-        $shortcut.TargetPath = $exePath
-        $shortcut.Arguments = "--remote-debugging-port=9000"
-        $shortcut.Save()
-    } else {
-        exit 1
-    }
+        $shortcutPath = "$([Environment]::GetFolderPath('Desktop'))\\${ideName}.lnk"
+        try {
+            $shortcut = $WshShell.CreateShortcut($shortcutPath)
+            $shortcut.TargetPath = $exePath
+            $shortcut.Arguments = "--remote-debugging-port=9000"
+            $shortcut.Save()
+        } catch { exit 1 }
+    } else { exit 1 }
 } else {
     foreach ($shortcutFile in $foundShortcuts) {
-        $shortcut = $WshShell.CreateShortcut($shortcutFile.FullName)
-        $originalArgs = $shortcut.Arguments
-
-        if ($originalArgs -match "--remote-debugging-port=\\d+") {
-            $shortcut.Arguments = $originalArgs -replace "--remote-debugging-port=\\d+", "--remote-debugging-port=9000"
-        } else {
-            $shortcut.Arguments = "--remote-debugging-port=9000 " + $originalArgs
-        }
-        $shortcut.Save()
+        try {
+            $shortcut = $WshShell.CreateShortcut($shortcutFile.FullName)
+            $args = $shortcut.Arguments
+            if ($args -match "--remote-debugging-port=\\d+") {
+                $shortcut.Arguments = $args -replace "--remote-debugging-port=\\d+", "--remote-debugging-port=9000"
+            } else {
+                $shortcut.Arguments = "--remote-debugging-port=9000 " + $args
+            }
+            $shortcut.Save()
+        } catch { continue }
     }
 }
 

@@ -4,6 +4,12 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [7.4.4] — 2026-03-25
+### Added
+- **CDP Relauncher Robustness (v16.3)**: Sửa lỗi script PowerShell (Array/Count) khi cài đặt CDP trên Windows. ✅
+- **Improved Setup Script**: Nâng cao khả năng tìm kiếm shortcut IDE tại nhiều vị trí khác nhau (Desktop, OneDrive, Taskbar).
+- **Error Handling**: Thêm Try/Catch khi lưu shortcut để tránh treo script khi gặp lỗi quyền truy cập.
+
 ## [7.4.3] — 2026-03-25
 ### Added
 - **Ultra-Precise AI Command Detection (v16.2)**: Tối ưu bộ chọn cho các nút "Run" trong khung viền AI (`bg-primary`). ✅

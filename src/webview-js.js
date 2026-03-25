@@ -181,7 +181,7 @@ module.exports = function getJS(state, BUILTIN_DENY, suggestions, audioData) {
                 const dot = document.querySelector('.status-dot');
                 if (dot) dot.style.background = isEngineActive ? 'var(--success)' : 'var(--danger)';
                 const stext = document.getElementById('status-text');
-                if (stext) stext.textContent = (isEngineActive ? 'Engine Active' : 'Engine Paused') + ' v7.4.3';
+                if (stext) stext.textContent = (isEngineActive ? 'Engine Active' : 'Engine Paused') + ' v7.4.4';
             } else if (msg.command === 'updateUptime') {
                 uptimeSeconds = msg.uptime;
                 updateUptimeDisplay();

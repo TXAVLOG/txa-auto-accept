@@ -29,7 +29,7 @@ function activate(context) {
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.4.3';
+    const VERSION = 'v7.4.4';
     outputChannel = vscode.window.createOutputChannel("TXA Auto Accept");
     context.subscriptions.push(outputChannel);
 
