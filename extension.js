@@ -8,6 +8,9 @@ const i18n = require('./src/i18n');
 const { CDPHandler } = require('./src/cdp/cdp-handler');
 const { Relauncher } = require('./src/cdp/relauncher');
 
+const EXTENSION_VERSION = '8.0.0';
+const ENGINE_VERSION = 'v17';
+
 let activePanel = null;
 let cdpHandler = null;
 let cdpScanTimer = null;
@@ -18,25 +21,20 @@ function log(msg) {
     if (outputChannel) {
         outputChannel.appendLine(`[${new Date().toLocaleTimeString()}] ${msg}`);
     }
-    console.log(`[TXA] ${msg}`);
+    console.log(`[TXA-v${ENGINE_VERSION}] ${msg}`);
 }
 
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
     const config = vscode.workspace.getConfiguration('txa-auto-accept');
     const lang = config.get('language', 'en');
     const t = i18n[lang] || i18n.en;
 
-    const VERSION = 'v7.4.5';
     outputChannel = vscode.window.createOutputChannel("TXA Auto Accept");
     context.subscriptions.push(outputChannel);
 
-    log(t.startupMsg.replace('{0}', VERSION));
-    vscode.window.showInformationMessage(t.startupMsg.replace('{0}', VERSION));
+    log(t.startupMsg.replace('{0}', `v${EXTENSION_VERSION} (${ENGINE_VERSION})`));
+    vscode.window.showInformationMessage(t.startupMsg.replace('{0}', `v${EXTENSION_VERSION}`));
 
-    // ── AUDIO ────────────────────────────────────────────────────────────────
     function getAudioData() {
         try {
             const audioPath = path.join(context.extensionPath, 'src', 'assets', 'notify.mp3');
@@ -47,12 +45,10 @@ function activate(context) {
         return null;
     }
 
-    // ── STATUS BAR ───────────────────────────────────────────────────────────
     let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
     statusBarItem.command = 'txa-auto-accept.openDashboard';
     context.subscriptions.push(statusBarItem);
 
-    // ── STATE ─────────────────────────────────────────────────────────────────
     let state = {
         clicks: context.globalState.get('clicks', 0),
         denied: context.globalState.get('denied', 0),
@@ -63,7 +59,8 @@ function activate(context) {
         weekStart: context.globalState.get('weekStart', Date.now()),
         timeSavedMinutes: 0,
         backgroundMode: context.globalState.get('backgroundMode', false),
-        _cdpLastClicks: 0
+        _cdpLastClicks: 0,
+        memoryStats: { gcCount: 0, peakEvents: 0, lastSync: null }
     };
 
     function updateROI() {
@@ -84,22 +81,24 @@ function activate(context) {
         const currentLang = cfg.get('language', 'en');
         const currentT = i18n[currentLang] || i18n.en;
         const cdpCount = cdpHandler ? cdpHandler.getConnectionCount() : 0;
-        
+        const connInfo = cdpHandler ? cdpHandler.getConnectionInfo() : [];
+
         updateROI();
         const cdpStatus = cdpCount > 0 ? ` $(plug)${cdpCount}` : (autoClick ? ' $(plug) OFF' : '');
-        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗ ${state.backgroundMode ? '$(globe)' : ''}${cdpStatus}`;
-        
+        const memStats = state.memoryStats.gcCount > 0 ? ` GC:${state.memoryStats.gcCount}` : '';
+        statusBarItem.text = `$(shield) TXA: ${state.clicks}✓ ${state.denied}✗ ${state.backgroundMode ? '$(globe)' : ''}${cdpStatus}${memStats}`;
+
         if (!autoClick) {
             statusBarItem.color = '#f43f5e';
         } else if (cdpCount === 0) {
-            statusBarItem.color = '#fbbf24'; // Warning if autoClick is on but CDP off
+            statusBarItem.color = '#fbbf24';
         } else if (state.backgroundMode) {
             statusBarItem.color = '#a78bfa';
         } else {
             statusBarItem.color = '#22d3ee';
         }
 
-        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', VERSION)}\n${state.timeSavedMinutes} minutes saved\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : (autoClick ? currentT.cdpNotAvailable : currentT.cdpNotConnected)}`;
+        statusBarItem.tooltip = `${currentT.statusBarTooltip.replace('{0}', `v${EXTENSION_VERSION}`)}\n${state.timeSavedMinutes} minutes saved\n${cdpCount > 0 ? currentT.cdpConnected.replace('{0}', cdpCount) : (autoClick ? currentT.cdpNotAvailable : currentT.cdpNotConnected)}`;
         statusBarItem.show();
 
         if (activePanel) {
@@ -113,24 +112,13 @@ function activate(context) {
                 cdpConnections: cdpCount,
                 weeklyClicks: state.weeklyClicks,
                 timeSavedMinutes: state.timeSavedMinutes,
-                backgroundMode: state.backgroundMode
+                backgroundMode: state.backgroundMode,
+                engineVersion: ENGINE_VERSION,
+                memoryStats: state.memoryStats
             });
         }
     }
 
-    // ── UPTIME TICKER ─────────────────────────────────────────────────────────
-    setInterval(() => {
-        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
-        if (cfg.get('autoClick', true)) {
-            state.uptime++;
-            context.globalState.update('uptime', state.uptime);
-            if (activePanel) {
-                activePanel.webview.postMessage({ command: 'updateUptime', uptime: state.uptime });
-            }
-        }
-    }, 1000);
-
-    // ── HANDLE ACTION ─────────────────────────────────────────────────────────
     function handleAction(type, cmd, details) {
         const time = new Date().toLocaleTimeString('vi-VN', { hour12: false });
         if (type === 'acc') {
@@ -142,14 +130,13 @@ function activate(context) {
             state.denied++;
             state.log.unshift({ t: time, cmd: cmd || 'Blocked', status: 'denied', details: details });
         }
-        if (state.log.length > 50) state.log.pop();
+        if (state.log.length > 100) state.log = state.log.slice(0, 100);
         context.globalState.update('clicks', state.clicks);
         context.globalState.update('denied', state.denied);
         context.globalState.update('log', state.log);
         updateStatusBar();
     }
 
-    // ── CDP ENGINE CONTROL ────────────────────────────────────────────────────
     function buildCDPConfig() {
         const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
         const ide = (vscode.env.appName || '').toLowerCase().includes('antigravity') ? 'antigravity' : 'cursor';
@@ -162,23 +149,70 @@ function activate(context) {
         };
     }
 
+    function setupCDPEventHandlers() {
+        if (!cdpHandler) return;
+
+        cdpHandler.on('connected', (info) => {
+            log(`CDP Connected: ${info.id} (${info.title})`);
+        });
+
+        cdpHandler.on('connectionLost', (info) => {
+            log(`CDP Connection Lost: ${info.id} - ${info.reason}`);
+        });
+
+        cdpHandler.on('reconnecting', (info) => {
+            log(`CDP Reconnecting: ${info.id} (attempt ${info.attempt})`);
+        });
+
+        cdpHandler.on('reconnected', (info) => {
+            log(`CDP Reconnected: ${info.id}`);
+        });
+
+        cdpHandler.on('healthCheck', (info) => {
+            if (info.dead > 0) {
+                log(`Health Check: ${info.dead}/${info.total} connections dead`);
+            }
+        });
+
+        cdpHandler.on('scriptInjected', (info) => {
+            log(`Script injected: ${info.id}`);
+        });
+
+        cdpHandler.on('configUpdated', (info) => {
+            log(`Config updated: ${info.id}`);
+        });
+
+        cdpHandler.on('noConnections', () => {
+            log('No CDP connections available');
+        });
+    }
+
     async function startCDPEngine() {
-        if (!cdpHandler) cdpHandler = new CDPHandler();
+        if (!cdpHandler) {
+            cdpHandler = new CDPHandler(log);
+            setupCDPEventHandlers();
+        }
         if (!relauncher) relauncher = new Relauncher(log, t, context);
 
-        relauncher.checkCDP().then(async (available) => {
+        try {
+            const available = await relauncher.checkCDP();
             if (!available) {
-                try { await relauncher.ensureCDPAndRelaunch(); } catch (e) { console.warn('[TXA] Relauncher failed:', e.message); }
+                try {
+                    await relauncher.ensureCDPAndRelaunch();
+                } catch (e) {
+                    console.warn('[TXA] Relauncher failed:', e.message);
+                }
             }
-        }).catch(() => { });
+        } catch (e) { }
 
         if (cdpScanTimer) clearInterval(cdpScanTimer);
+
         cdpScanTimer = setInterval(async () => {
             const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
             if (!cfg.get('autoClick', true)) {
-                stopCDPEngine();
                 return;
             }
+
             try {
                 if (cdpHandler) {
                     const picked = await cdpHandler.getPickedSelector();
@@ -187,16 +221,30 @@ function activate(context) {
                         const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
                         vscode.window.showInformationMessage(currentT.selectorCaptured.replace('{0}', picked));
                     }
+
                     if (await cdpHandler.isCDPAvailable()) {
                         await cdpHandler.start(buildCDPConfig());
+
                         const stats = await cdpHandler.getStats();
-                        if (stats.events) {
-                            stats.events.forEach(ev => handleAction('acc', `Clicked [${ev.btn}]`, `Target: ${ev.cmd}`));
+                        if (stats.events && stats.events.length > 0) {
+                            stats.events.forEach(ev => {
+                                handleAction('acc', `Clicked [${ev.btn}]`, `Target: ${ev.cmd}${ev.verified ? ' (verified)' : ''}`);
+                            });
+                        }
+
+                        if (stats.memoryStats) {
+                            state.memoryStats = {
+                                gcCount: stats.memoryStats.gcCount || 0,
+                                peakEvents: stats.memoryStats.peakEvents || 0,
+                                lastSync: Date.now()
+                            };
                         }
                     }
                 }
                 updateStatusBar();
-            } catch (e) { }
+            } catch (e) {
+                log(`CDP scan error: ${e.message}`);
+            }
         }, 2000);
     }
 
@@ -206,7 +254,6 @@ function activate(context) {
         updateStatusBar();
     }
 
-    // ── TERMINAL MONITOR ─────────────────────────────────────────────────────
     function startTerminalMonitor() {
         try {
             if (typeof vscode.window.onDidWriteTerminalData === 'function') {
@@ -225,14 +272,23 @@ function activate(context) {
         } catch (err) { }
     }
 
-    // INITIAL START
+    setInterval(() => {
+        const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
+        if (cfg.get('autoClick', true)) {
+            state.uptime++;
+            context.globalState.update('uptime', state.uptime);
+            if (activePanel) {
+                activePanel.webview.postMessage({ command: 'updateUptime', uptime: state.uptime });
+            }
+        }
+    }, 1000);
+
     startTerminalMonitor();
     if (vscode.workspace.getConfiguration('txa-auto-accept').get('autoClick', true)) {
         startCDPEngine();
     }
     updateStatusBar();
 
-    // ── DASHBOARD ─────────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.openDashboard', function () {
         if (activePanel) { activePanel.reveal(vscode.ViewColumn.One); return; }
 
@@ -271,8 +327,6 @@ function activate(context) {
                     }).then(uri => {
                         if (uri) {
                             fs.writeFileSync(uri.fsPath, JSON.stringify(state.denyList, null, 2));
-                            const currentT = i18n[cfg.get('language', 'en')] || i18n.en;
-                            vscode.window.showInformationMessage(currentT.configSaved); // Or export success msg
                         }
                     });
                     return;
@@ -320,16 +374,23 @@ function activate(context) {
                 case 'openLink':
                     vscode.env.openExternal(vscode.Uri.parse(message.url));
                     return;
+                case 'syncState':
+                    if (cdpHandler) {
+                        cdpHandler.syncState({ backgroundMode: message.backgroundMode }).catch(() => {});
+                    }
+                    return;
             }
         });
     }));
 
-    // ── COMMANDS ──────────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleBackground', () => {
         state.backgroundMode = !state.backgroundMode;
         context.globalState.update('backgroundMode', state.backgroundMode);
         updateStatusBar();
-        if (cdpHandler) cdpHandler.updateConfig(buildCDPConfig()).catch(() => { });
+        if (cdpHandler) {
+            cdpHandler.updateConfig(buildCDPConfig()).catch(() => { });
+            cdpHandler.syncState({ backgroundMode: state.backgroundMode }).catch(() => {});
+        }
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.toggleEngine', () => {
@@ -350,6 +411,7 @@ function activate(context) {
 
     context.subscriptions.push(vscode.commands.registerCommand('txa-auto-accept.resetCounter', () => {
         state.clicks = 0; state.denied = 0; state.uptime = 0; state.log = [];
+        state.memoryStats = { gcCount: 0, peakEvents: 0, lastSync: null };
         context.globalState.update('clicks', 0); context.globalState.update('denied', 0);
         context.globalState.update('uptime', 0); context.globalState.update('log', []);
         updateStatusBar();
@@ -360,7 +422,6 @@ function activate(context) {
         relauncher.ensureCDPAndRelaunch();
     }));
 
-    // ── CONFIG WATCHER ─────────────────────────────────────────────────────────
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('txa-auto-accept')) {
             const cfg = vscode.workspace.getConfiguration('txa-auto-accept');
@@ -372,7 +433,10 @@ function activate(context) {
 
 function deactivate() {
     if (cdpScanTimer) clearInterval(cdpScanTimer);
-    if (cdpHandler) cdpHandler.stop().catch(() => { });
+    if (cdpHandler) {
+        cdpHandler.stop().catch(() => { });
+        cdpHandler.dispose();
+    }
 }
 
 module.exports = { activate, deactivate };

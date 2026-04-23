@@ -1,6 +1,6 @@
-# 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium v7.4.5
+# 🛡️ TXA Auto Accept — Liquid Glass 2026 Hybrid Premium v8.0.0
 
-[![Version](https://img.shields.io/badge/version-7.4.5-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
+[![Version](https://img.shields.io/badge/version-8.0.0-6366f1.svg?style=for-the-badge)](https://github.com/TXAVLOG/txa-auto-accept)
 [![Open VSX](https://img.shields.io/open-vsx/v/txa-team/txa-auto-accept?color=22d3ee&style=for-the-badge)](https://open-vsx.org/extension/txa-team/txa-auto-accept)
 [![License: MIT](https://img.shields.io/badge/License-MIT-a78bfa.svg?style=for-the-badge)](LICENSE)
 
@@ -17,12 +17,14 @@
 <a name="english"></a>
 # 🇺🇸 Premium English Version
 
-**TXA Auto Accept v7.3.0-preview** represents the pinnacle of VS Code automation. It’s an elite extension engineered to handle tedious AI confirmation dialogs, perform context-aware auto-clicks, and provide a high-security firewall (Guardian Shield) to protect your professional workflow.
+**TXA Auto Accept v8.0.0** represents the pinnacle of VS Code automation. It’s an elite extension engineered to handle tedious AI confirmation dialogs, perform context-aware auto-clicks, and provide a high-security firewall (Guardian Shield) to protect your professional workflow.
 
-### 🆕 Release Preview Features
-- **Safety Guard**: Automatically blocks destructive clicks like "Delete", "Reset", or "Force Push".
-- **Ghost Click Preview**: A 600ms visual pulse effect before the actual click for maximum confidence.
-- **Enhanced AI Targeting**: Deeply integrated for **Antigravity**, **Cline**, and **Cursor**.
+### 🆕 Version 8.0.0 — The v17 Engine Breakthrough
+- **Enhanced Auto-Click Algorithm (v17 Engine)**: Advanced element recognition with scoring system, retry mechanism (3 attempts), and post-click validation.
+- **Intelligent Element Validation**: Full handling of edge cases - obscured elements, out-of-viewport, hidden/disabled state, and aria-disabled.
+- **Event-Driven Architecture**: Robust CDP handling with automated health checks and auto-reconnect logic (max 3 attempts).
+- **Memory Optimization**: Smart garbage collection for events and state synchronization between background and content scripts to prevent browser termination.
+- **Context-Aware Decisions**: Analyzes element location (Modal, Sidebar, Editor, AI Chat) to make high-precision click decisions.
 
 ## 🌊 The Liquid Glass 2026 Experience
 
@@ -34,14 +36,8 @@ The Dashboard features an ultra-realistic **Liquid Glass** effect with sub-pixel
 ### 🔄 Intelligent Tab Cycling (Background Mode)
 The industry's first **CDP-based Background Engine**. TXA doesn't just watch your current screen; it intelligently cycles through your active AI chat tabs (Cursor/Antigravity), allowing you to process multiple AI agents simultaneously while you focus on deep work.
 
-### ⏱️ ROI Analytics Engine
-Real-time **Time Saved** counter. TXA tracks every click handled and calculates exactly how many minutes of manual interaction you’ve saved this week. Turn automation into measurable efficiency.
-
 ### 🛡️ Guardian Shield — Multi-Layer Protection
 Ultimate security with **60+ Pre-populated Security Rules**. Blocks terminal disasters: `rm -rf`, destructive formats, reverse shells, and unauthorized data exfiltration. The AI-driven Threat Radar alerts you before disaster strikes.
-
-### 🧬 Responsive Visual Overlay
-A smart, non-intrusive **Status Overlay** follows your AI panels perfectly. Powered by `ResizeObserver`, it stays fixed to your sidebar even as you resize your IDE, providing a sleek Purple (Background) or Cyan (Active) glow.
 
 ---
 
@@ -64,26 +60,22 @@ A smart, non-intrusive **Status Overlay** follows your AI panels perfectly. Powe
 <a name="tiếng-viet"></a>
 # 🇻🇳 Phiên bản Cao cấp (Tiếng Việt)
 
-**TXA Auto Accept v7.3.0-preview** là đỉnh cao của tự động hóa trên VS Code. Một siêu trình mở rộng (Premium Extension) được chế tác để xử lý mọi hộp thoại xác nhận AI gây phiền toái, thực thi click thông minh và bảo vệ toàn diện tiến trình làm việc của bạn bằng hệ thống tường lửa **Guardian Shield**.
+**TXA Auto Accept v8.0.0** là đỉnh cao của tự động hóa trên VS Code. Một siêu trình mở rộng (Premium Extension) được chế tác để xử lý mọi hộp thoại xác nhận AI gây phiền tóa, thực thi click thông minh và bảo vệ toàn diện tiến trình làm việc của bạn bằng hệ thống tường lửa **Guardian Shield**.
 
-### 🆕 Tính năng bản Release Preview:
-- **Safety Guard (Chốt an toàn)**: Tự động nhận diện và chặn các lệnh xóa, reset hoặc force push nguy hiểm.
-- **Ghost Click Preview**: Hiệu ứng "chuột ma" xung điện 600ms trước khi click thật để bạn kịp quan sát.
-- **Tối ưu AI Assistant**: Thiết kế riêng cho **Antigravity**, **Cline** và **Cursor**.
+### 🆕 Tính năng đột phá v8.0.0 — Engine v17:
+- **Thuật toán Auto-Click Nâng cao (Engine v17)**: Hệ thống chấm điểm phần tử thông minh, cơ chế retry (3 lần) và xác thực sau khi click (Validation).
+- **Xác thực Phần tử Thông minh**: Xử lý triệt để các trường hợp nút bị che khuất, nằm ngoài khung nhìn, bị ẩn hoặc vô hiệu hóa.
+- **Kiến trúc Hướng sự kiện (Event-Driven)**: Xử lý CDP mạnh mẽ với hệ thống tự kiểm tra sức khỏe (Health Check) và tự động kết nối lại.
+- **Tối ưu hóa Bộ nhớ**: Tự động dọn rác (GC) cho các sự kiện và đồng bộ trạng thái giữa background/content scripts để tránh bị browser đóng.
+- **Phân tích Ngữ cảnh**: Nhận diện vị trí nút (Modal, Sidebar, Editor, Chat AI) để đưa ra quyết định click chính xác tuyệt đối.
 
 ## 🌊 Trải nghiệm Liquid Glass 2026
 
 ### 🔄 Trí tuệ tự xoay Tab (Background Mode)
 Lần đầu tiên trên thị trường, công cụ hỗ trợ **Background Engine** cho trình duyệt nhúng của IDE. TXA không chỉ nhìn một chỗ; nó tự động luân chuyển (Cycle) giữa các Tab chat AI (Cursor/Antigravity), giúp bạn chạy 3-4 Agent cùng lúc mà không cần chạm tay vào máy.
 
-### ⏱️ Động cơ Thống kê ROI
-Công cụ đo lường hiệu suất thực tế. TXA đếm từng cú click và tính toán chính xác số phút bạn đã tiết kiệm được trong tuần qua. Định nghĩa lại khái niệm "Tự động hóa là năng suất thực".
-
 ### 🛡️ Guardian Shield — Tường lửa Đa lớp
 Lá chắn bảo mật tối thượng với **60+ quy tắc nạp sẵn**. Ngăn chặn mọi thảm họa Terminal: `rm -rf`, `format`, mã độc đảo ngược shell (`reverse-shell`)... Hệ thống **Threat Radar** sẽ cảnh báo mức độ nguy hiểm từ THẤP đến CAO.
-
-### 🧬 Lớp phủ Visual Overlay Tương thích
-Lớp phủ trạng thái thông minh nhất hiện nay, tự động "bám dính" và co dãn (Responsive) theo đúng Panel của IDE. Bạn không bao giờ phải lo lắng về việc giao diện bị nhòe hay lệch khỏi khung chat AI.
 
 ---
 
@@ -97,6 +89,6 @@ Lớp phủ trạng thái thông minh nhất hiện nay, tự động "bám dín
 ---
 
 <p align="center">
-<br/>
-© 2026 Crafted with ❤️ by the <strong>TXA Team</strong> Global.<br/>Standardize your automation workflow with <b>MIT License</b>.
+  <br/>
+  Made with ❤️ by <strong>TXA Team</strong>
 </p>

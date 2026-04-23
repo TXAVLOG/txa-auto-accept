@@ -15,7 +15,7 @@ module.exports = function getHTML(config, state, t, LOGO_SVG) {
                     <div style="display:flex;align-items:center;gap:8px">
                         <h1>${t.title}</h1>
                     </div>
-                    <span>v7.4.5 · Liquid Glass Engine | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
+                    <span>v8.0.0 · Liquid Glass Engine 2026 | <span style="color:var(--success);font-weight:700" id="terminal-badge">${t.terminalProtection}</span></span>
                 </div>
             </div>
             <div class="nav-tabs">

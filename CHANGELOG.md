@@ -4,6 +4,27 @@ Tất cả các thay đổi đáng chú ý đối với dự án **TXA Auto Acce
 
 ---
 
+## [8.0.0] — 2026-04-23
+### Added
+- **Enhanced Auto-Click Algorithm (v17 Engine)**: Thuật toán nhận diện phần tử mới với scoring system, retry mechanism (3 attempts), và post-click validation.
+- **Element Validation**: Kiểm tra đầy đủ edge cases - obscured elements, out-of-viewport, hidden/disabled state, aria-disabled.
+- **Element Fingerprinting**: Hệ thống fingerprint để tránh click trùng lặp với debounce 300ms.
+- **Context Analysis**: Phân tích ngữ cảnh phần tử - modal, sidebar, editor, terminal, AI chat để đưa ra quyết định chính xác hơn.
+- **Dangerous Pattern Detection**: Thêm kiểm tra các text nguy hiểm như delete, drop, remove, destroy, format, truncate.
+### Changed
+- **Event-Driven Architecture**: CDPHandler mở rộng từ EventEmitter, hỗ trợ events: connected, connectionLost, reconnecting, reconnected, healthCheck, scriptInjected, configUpdated, noConnections.
+- **Health Check System**: Tự động kiểm tra kết nối CDP mỗi 10 giây với cơ chế reconnect tự động (max 3 attempts).
+- **State Synchronization**: Thêm API `syncState()` để đồng bộ trạng thái giữa background và content scripts.
+- **Memory Optimization**: Tự động garbage collection events khi vượt ngưỡng 50 items, theo dõi memory stats (GC count, peak events).
+- **Connection Management**: Cải thiện WebSocket handling với timeout cấu hình được, heartbeat mechanism, và dispose() method.
+### Fixed
+- **Improved Error Handling**: Thêm _evalSafe() để không throw exception khi eval thất bại.
+- **Script Caching**: Cache script content để tránh đọc file nhiều lần.
+- **Race Condition Prevention**: Cải thiện cơ chế stop/start để tránh race conditions.
+### Security
+- **Backward Compatibility**: Đảm bảo tương thích ngược với VS Code ^1.85.0.
+- **Versioned APIs**: Sử dụng API versioning (__txaStart_v17, __txaStop_v17, etc.) để dễ dàng migration.
+
 ## [7.4.5] — 2026-03-25
 ### Added
 - **Git Protection Shield Boost**: Thêm `git checkout`, `git branch`, `git merge`, `git rebase` vào danh sách chặn mặc định (BUILTIN_DENY). ✅
