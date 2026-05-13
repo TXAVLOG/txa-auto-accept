@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chính sách Bảo mật - TLocket</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FCB600;
+            --primary-dark: #D49B00;
+            --primary-light: #FFD54F;
+            --bg: #1d1b20;
+            --surface: #2a2730;
+            --card: #47444c;
+            --text-primary: #ffffff;
+            --text-secondary: #B0ADB5;
+            --text-muted: #7A7880;
+            --glass: rgba(71, 68, 76, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(252, 182, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(252, 182, 0, 0.05) 0%, transparent 40%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 60px;
+            border-radius: 32px;
+            border: 1px border solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .last-updated {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .intro {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(252, 182, 0, 0.1);
+            border-radius: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 45px 0 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background: var(--primary);
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        p, li {
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+        }
+
+        ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .privacy-highlight {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .privacy-highlight strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .contact-info {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 24px;
+            margin-top: 50px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .email-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            color: var(--primary-light);
+            text-shadow: 0 0 10px rgba(252, 182, 0, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 30px 20px; border-radius: 0; }
+            h1 { font-size: 1.8rem; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">TLocket</div>
+            <h1>Chính sách Bảo mật</h1>
+            <p class="last-updated">Cập nhật lần cuối: 13 tháng 05, 2026</p>
+        </header>
+
+        <div class="intro">
+            Chào mừng bạn đến với TLocket. Chúng tôi cam kết bảo vệ tuyệt đối quyền riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo mật thông tin khi bạn trải nghiệm ứng dụng.
+        </div>
+
+        <h2>1. Thông tin chúng tôi thu thập</h2>
+        <p>Để mang lại trải nghiệm tốt nhất, chúng tôi chỉ thu thập các thông tin thực sự cần thiết:</p>
+        <div class="privacy-highlight">
+            <strong>Thông tin tài khoản</strong>
+            Email, tên hiển thị và ảnh đại diện khi bạn đăng ký qua Google hoặc phương thức khác.
+        </div>
+        <div class="privacy-highlight">
+            <strong>Nội dung người dùng</strong>
+            Các hình ảnh bạn chụp và chia sẻ. Dữ liệu này được mã hóa và bảo mật trên máy chủ của chúng tôi.
+        </div>
+        <div class="privacy-highlight">
+            <strong>Thông tin thiết bị</strong>
+            Kiểu máy, phiên bản hệ điều hành để đảm bảo ứng dụng hoạt động mượt mà nhất trên thiết bị của bạn.
+        </div>
+
+        <h2>2. Cách chúng tôi sử dụng thông tin</h2>
+        <ul>
+            <li>Cung cấp và duy trì dịch vụ chia sẻ khoảnh khắc giữa bạn và những người bạn thân thiết.</li>
+            <li>Gửi thông báo tức thời (Push Notifications) khi có tương tác mới để bạn không bỏ lỡ khoảnh khắc nào.</li>
+            <li>Phát hiện và ngăn chặn các hành vi vi phạm điều khoản, đảm bảo môi trường an toàn cho mọi người dùng.</li>
+        </ul>
+
+        <h2>3. Chia sẻ dữ liệu</h2>
+        <div class="privacy-highlight" style="border-left: 4px solid var(--primary);">
+            Chúng tôi <strong>KHÔNG</strong> bán, cho thuê hoặc chia sẻ dữ liệu cá nhân của bạn cho bất kỳ bên thứ ba nào vì mục đích quảng cáo. Hình ảnh của bạn chỉ hiển thị cho những người bạn mà bạn đã chủ động kết nối trong ứng dụng.
+        </div>
+
+        <h2>4. Quyền của người dùng</h2>
+        <ul>
+            <li><strong>Quyền kiểm soát:</strong> Bạn có quyền xóa bất kỳ hình ảnh nào mình đã đăng tải bất cứ lúc nào.</li>
+            <li><strong>Quyền được quên:</strong> Bạn có thể yêu cầu xóa toàn bộ tài khoản và mọi dữ liệu liên quan thông qua phần cài đặt trong ứng dụng.</li>
+        </ul>
+
+        <h2>5. Bảo mật dữ liệu</h2>
+        <p>An toàn thông tin là ưu tiên hàng đầu. Chúng tôi sử dụng các dịch vụ lưu trữ đám mây hàng đầu thế giới (Supabase/Google Cloud) với các tiêu chuẩn bảo mật khắt khe nhất để bảo vệ dữ liệu của bạn khỏi mọi sự truy cập trái phép.</p>
+
+        <div class="contact-info">
+            <p style="margin-bottom: 10px; color: var(--text-primary); font-weight: 600;">Liên hệ về quyền riêng tư</p>
+            <p>Nếu bạn có bất kỳ câu hỏi nào về cách chúng tôi bảo vệ dữ liệu của mình:</p>
+            <a href="mailto:txasoftdev@gmail.com" class="email-link">txasoftdev@gmail.com</a>
+        </div>
+
+        <footer>
+            &copy; 2026 TLocket Team. Bảo mật của bạn là sứ mệnh của chúng tôi.<br>
+            Protected with industry-standard encryption.
+        </footer>
+    </div>
+</body>
+</html>
+
